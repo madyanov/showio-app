@@ -32,9 +32,9 @@
       ...
     ```
 
-2. Open `ShowTracker.xcworkspace` in the XCode
+2. Open `ShowTracker.xcworkspace` in the Xcode
 
-3. Put your *TMDB API Key* in the `Config.plist` file
+3. Put your *TMDB API Key* to the `Config.plist` file
 
 ## Overview
 
