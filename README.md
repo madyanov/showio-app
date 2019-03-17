@@ -8,6 +8,12 @@
 
 [50+ MB Demo GIF](assets/demo.gif)
 
+## Features
+
+- Pretty animations
+- Works without internet
+- Supports iPhone and iPad in all orientations
+
 ## Requirements
 
 - iOS 10+
@@ -26,9 +32,9 @@
       ...
     ```
 
-2. Open ShowTracker.xcworkspace in the XCode.
+2. Open `ShowTracker.xcworkspace` in the XCode.
 
-3. Put your TMDB API Key in the Config.plist file.
+3. Put your *TMDB API Key* in the `Config.plist` file.
 
 ## Overview
 
