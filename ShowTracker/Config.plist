@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Privacy Policy URL</key>
+	<string></string>
+	<key>Support Email</key>
+	<string></string>
+	<key>TMDB API Key</key>
+	<string></string>
+	<key>AdMob Enabled</key>
+	<false/>
+	<key>AdMob Application ID</key>
+	<string></string>
+	<key>AdMob Banners</key>
+	<dict>
+		<key>shows_bottom</key>
+		<string></string>
+	</dict>
+	<key>AdMob Test Devices</key>
+	<array>
+		<string></string>
+	</array>
+</dict>
+</plist>
