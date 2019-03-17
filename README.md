@@ -38,6 +38,7 @@
 
 ## Overview
 
+- UI written in code
 - [Coordinator pattern](http://khanlou.com/2015/10/coordinators-redux/) is used to separate view logic from business logic
 - Core Data is used for local storage
 - Async API provided by the [Promises Toolkit](https://github.com/madyanov/Promises)
