@@ -32,15 +32,15 @@
       ...
     ```
 
-2. Open `ShowTracker.xcworkspace` in the XCode.
+2. Open `ShowTracker.xcworkspace` in the XCode
 
-3. Put your *TMDB API Key* in the `Config.plist` file.
+3. Put your *TMDB API Key* in the `Config.plist` file
 
 ## Overview
 
-- [Coordinator pattern](http://khanlou.com/2015/10/coordinators-redux/) is used to separate view logic from business logic.
-- Core Data is used for local storage.
-- Async API provided by the [Promises Toolkit](https://github.com/madyanov/Promises).
+- [Coordinator pattern](http://khanlou.com/2015/10/coordinators-redux/) is used to separate view logic from business logic
+- Core Data is used for local storage
+- Async API provided by the [Promises Toolkit](https://github.com/madyanov/Promises)
 
 ## Links
 
