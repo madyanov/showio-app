@@ -1,0 +1,79 @@
+/* 
+  Localizable.strings
+  ShowTracker
+
+  Created by Roman Madyanov on 28/11/2018.
+  Copyright © 2018 Roman Madyanov. All rights reserved.
+*/
+
+/* Total progress label */
+"Total progress" = "Прогресс";
+
+/* Episode duration (minutes) */
+"%d min" = "%d мин";
+
+/* Default season name */
+"Season %d" = "Сезон %d";
+
+/* Season & episode number */
+"S%02dE%02d" = "S%02dE%02d";
+
+/* Episodes title label */
+"Episodes" = "Серии";
+
+/* Seasons title label */
+"Seasons" = "Сезоны";
+
+/* Default episode description */
+"No description available." = "Описание недоступно.";
+
+/* Read More button title */
+"Read More" = "Далее";
+
+/* Read Less button title */
+"Read Less" = "Скрыть";
+
+/* The Movie DB attribution label */
+"Powered by TheMovieDB" = "При поддержке TheMovieDB";
+
+/* Show search controller title */
+"Search" = "Поиск";
+
+/* Delete menu item title */
+"Delete" = "Удалить";
+
+/* Running show year */
+"%@ · Running" = "%@ · Идёт";
+
+/* Ended show year */
+"%@ · Ended" = "%@ · Завершён";
+
+/* Air date is in past */
+"Aired on %@" = "Премьера %@";
+
+/* Air date is yesterday */
+"Aired yesterday" = "Премьера вчера";
+
+/* Air date is today */
+"Airs today" = "Премьера сегодня";
+
+/* Air date is tomorrow */
+"Airs tomorrow" = "Премьера завтра";
+
+/* Feedback button */
+"Feedback" = "Обратная связь";
+
+/* Privacy Policy button */
+"Privacy Policy" = "Политика конфиденциальности";
+
+/* Cancel button */
+"Cancel" = "Отмена";
+
+/* Switch Theme button */
+"Switch Theme" = "Переключить тему";
+
+/* Next episode air date is unknown */
+"Next episode air date is unknown :(" = "Дата премьеры следующей серии пока неизвестна :(";
+
+/* Air date for next episode is tomorrow */
+"Next episode airs tomorrow" = "Премьера следующей серии завтра";

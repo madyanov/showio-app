@@ -1,0 +1,38 @@
+PODS:
+  - Google-Mobile-Ads-SDK (7.39.0)
+  - Promises (1.0.0)
+  - Toolkit (1.0.0)
+
+DEPENDENCIES:
+  - Google-Mobile-Ads-SDK
+  - Promises (from `https://github.com/madyanov/Promises.git`, tag `v1.0.0`)
+  - Toolkit (from `https://github.com/madyanov/iOS-Toolkit.git`, tag `v1.0.0`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Google-Mobile-Ads-SDK
+
+EXTERNAL SOURCES:
+  Promises:
+    :git: https://github.com/madyanov/Promises.git
+    :tag: v1.0.0
+  Toolkit:
+    :git: https://github.com/madyanov/iOS-Toolkit.git
+    :tag: v1.0.0
+
+CHECKOUT OPTIONS:
+  Promises:
+    :git: https://github.com/madyanov/Promises.git
+    :tag: v1.0.0
+  Toolkit:
+    :git: https://github.com/madyanov/iOS-Toolkit.git
+    :tag: v1.0.0
+
+SPEC CHECKSUMS:
+  Google-Mobile-Ads-SDK: d0f10a7c4d7015db23075ff316602350d12049db
+  Promises: 104c6ef6ee952aa892ddfc45f8dea392791f0e7d
+  Toolkit: 12cafb1be610ac5fc03240f030eee657eb1396d3
+
+PODFILE CHECKSUM: 704dad83468fd19831ba75d7362945ae2ea27bb2
+
+COCOAPODS: 1.6.0.rc.2

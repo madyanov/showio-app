@@ -1,0 +1,79 @@
+/* 
+  Localizable.strings
+  ShowTracker
+
+  Created by Roman Madyanov on 28/11/2018.
+  Copyright © 2018 Roman Madyanov. All rights reserved.
+*/
+
+/* Total progress label */
+"Total progress" = "Total progress";
+
+/* Episode duration (minutes) */
+"%d min" = "%d min";
+
+/* Default season name */
+"Season %d" = "Season %d";
+
+/* Season & episode number */
+"S%02dE%02d" = "S%02dE%02d";
+
+/* Episodes title label */
+"Episodes" = "Episodes";
+
+/* Seasons title label */
+"Seasons" = "Seasons";
+
+/* Default episode description */
+"No description available." = "No description available.";
+
+/* Read More button title */
+"Read More" = "Read More";
+
+/* Read Less button title */
+"Read Less" = "Read Less";
+
+/* The Movie DB attribution label */
+"Powered by TheMovieDB" = "Powered by TheMovieDB";
+
+/* Show search controller title */
+"Search" = "Search";
+
+/* Delete menu item title */
+"Delete" = "Delete";
+
+/* Running show year */
+"%@ · Running" = "%@ · Running";
+
+/* Ended show year */
+"%@ · Ended" = "%@ · Ended";
+
+/* Air date is in past */
+"Aired on %@" = "Aired on %@";
+
+/* Air date is yesterday */
+"Aired yesterday" = "Aired yesterday";
+
+/* Air date is today */
+"Airs today" = "Airs today";
+
+/* Air date is tomorrow */
+"Airs tomorrow" = "Airs tomorrow";
+
+/* Feedback button */
+"Feedback" = "Feedback";
+
+/* Privacy Policy button */
+"Privacy Policy" = "Privacy Policy";
+
+/* Cancel button */
+"Cancel" = "Cancel";
+
+/* Switch Theme button */
+"Switch Theme" = "Switch Theme";
+
+/* Next episode air date is unknown */
+"Next episode air date is unknown :(" = "Next episode air date is unknown :(";
+
+/* Air date for next episode is tomorrow */
+"Next episode airs tomorrow" = "Next episode airs tomorrow";

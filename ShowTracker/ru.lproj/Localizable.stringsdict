@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Next episode airs in %d days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Премьера следующей серии через %d день</string>
+			<key>many</key>
+			<string>Премьера следующей серии через %d дней</string>
+			<key>other</key>
+			<string>Премьера следующей серии через %d дня</string>
+		</dict>
+	</dict>
+	<key>Airs in %d days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Премьера через %d день</string>
+			<key>many</key>
+			<string>Премьера через %d дней</string>
+			<key>other</key>
+			<string>Премьера через %d дня</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
