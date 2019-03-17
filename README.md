@@ -1,9 +1,9 @@
 # Showio
 
 <p align="center">
-    <img src="assets/screen-1.png" width="200" />
-    <img src="assets/screen-2.png" width="200" />
-    <img src="assets/screen-3.png" width="200" />
+    <img src="assets/screen-1.png" width="256" />
+    <img src="assets/screen-2.png" width="256" />
+    <img src="assets/screen-3.png" width="256" />
 </p>
 
 [50+ MB Demo GIF](assets/demo.gif)
