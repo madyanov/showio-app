@@ -204,6 +204,8 @@ extension ShowsCoordinator: NSFetchedResultsControllerDelegate {
                 case .move:
                     showsViewController.deleteShow(at: index)
                     showsViewController.insertShow(at: newIndex)
+                @unknown default:
+                    fatalError("unknown NSFetchedResultsChangeType")
                 }
             }
         }

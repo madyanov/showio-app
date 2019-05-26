@@ -10,9 +10,9 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    private lazy var coordinator = ShowsCoordinator(services: Services())
+    var window: UIWindow?
 
-    private var window: UIWindow?
+    private lazy var coordinator = ShowsCoordinator(services: Services())
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
