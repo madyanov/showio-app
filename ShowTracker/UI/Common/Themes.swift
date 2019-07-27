@@ -6,28 +6,51 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-protocol ChangingTheme: AnyObject {
+protocol ThemeChanging: AnyObject
+{
     func startListenForThemeChange()
     func didChangeTheme() // must be declared as @objc
 }
 
-extension ChangingTheme {
+extension ThemeChanging
+{
     func startListenForThemeChange() {
         didChangeTheme()
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: Selector(("didChangeTheme")), // TODO: resolve compiler warning somehow
-            name: .didChangeTheme,
-            object: nil
-        )
+        NotificationCenter.default.addObserver(self,
+                                               selector: Selector(("didChangeTheme")),
+                                               name: .didChangeTheme,
+                                               object: nil)
     }
 }
 
-enum Theme: String, Style {
+extension Notification.Name
+{
+    static let didChangeTheme = Notification.Name("didChangeTheme")
+}
+
+protocol Style
+{
+    var clearBackgroundColor: UIColor { get }
+    var primaryBackgroundColor: UIColor { get }
+    var secondaryBackgroundColor: UIColor { get }
+    var primaryForegroundColor: UIColor { get }
+    var secondaryForegroundColor: UIColor { get }
+    var primaryBrandColor: UIColor { get }
+    var secondaryBrandColor: UIColor { get }
+    var tintColor: UIColor { get }
+    var ratingColor: UIColor { get }
+    var blurStyle: UIBlurEffect.Style { get }
+    var statusBarStyle: UIStatusBarStyle { get }
+    var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
+    var keyboardAppearance: UIKeyboardAppearance { get }
+    var scrollIndicatorStyle: UIScrollView.IndicatorStyle { get }
+}
+
+enum Theme: String, Style
+{
     case light
     case dark
 
@@ -75,28 +98,8 @@ enum Theme: String, Style {
     private static let darkStyle = DarkStyle()
 }
 
-extension Notification.Name {
-    static let didChangeTheme = Notification.Name("didChangeTheme")
-}
-
-protocol Style {
-    var clearBackgroundColor: UIColor { get }
-    var primaryBackgroundColor: UIColor { get }
-    var secondaryBackgroundColor: UIColor { get }
-    var primaryForegroundColor: UIColor { get }
-    var secondaryForegroundColor: UIColor { get }
-    var primaryBrandColor: UIColor { get }
-    var secondaryBrandColor: UIColor { get }
-    var tintColor: UIColor { get }
-    var ratingColor: UIColor { get }
-    var blurStyle: UIBlurEffect.Style { get }
-    var statusBarStyle: UIStatusBarStyle { get }
-    var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
-    var keyboardAppearance: UIKeyboardAppearance { get }
-    var scrollIndicatorStyle: UIScrollView.IndicatorStyle { get }
-}
-
-private struct LightStyle: Style {
+private struct LightStyle: Style
+{
     var clearBackgroundColor: UIColor
         { return primaryBackgroundColor.withAlphaComponent(0) }
     var primaryBackgroundColor: UIColor
@@ -127,7 +130,8 @@ private struct LightStyle: Style {
         { return .default }
 }
 
-private struct DarkStyle: Style {
+private struct DarkStyle: Style
+{
     var clearBackgroundColor: UIColor
         { return primaryBackgroundColor.withAlphaComponent(0) }
     var primaryBackgroundColor: UIColor

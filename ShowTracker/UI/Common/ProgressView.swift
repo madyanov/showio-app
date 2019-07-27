@@ -6,11 +6,11 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class ProgressView: UIView {
-    var spacing: CGFloat = 8 {
+final class ProgressView: UIView
+{
+    var spacing: CGFloat = .standardSpacing {
         didSet { contentStackView.spacing = spacing }
     }
 
@@ -21,7 +21,7 @@ class ProgressView: UIView {
         }
     }
 
-    var progressBarHeight: CGFloat = 8 {
+    var progressBarHeight: CGFloat = .standardSpacing {
         didSet { progressBarView.height = progressBarHeight }
     }
 
@@ -57,7 +57,7 @@ class ProgressView: UIView {
 
     private lazy var labelsStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         return stackView
     }()
 
@@ -101,8 +101,10 @@ class ProgressView: UIView {
     }
 }
 
-extension ProgressView: ChangingTheme {
-    @objc func didChangeTheme() {
+extension ProgressView: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         leadingLabel.textColor = Theme.current.secondaryForegroundColor
         trailingLabel.textColor = Theme.current.secondaryForegroundColor
     }

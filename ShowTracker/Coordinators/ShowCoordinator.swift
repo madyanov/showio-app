@@ -6,49 +6,29 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 import Promises
 
-protocol ShowCoordinatorDelegate: AnyObject {
-    func didClose(_ showCoordinator: ShowCoordinator)
-}
-
-class ShowCoordinator: Coordinator {
-    weak var delegate: ShowCoordinatorDelegate?
-
-    var childCoordinators: [Coordinator] = []
-
-    var viewController: UIViewController {
-        return showViewController
-    }
-
-    var model: Show? {
-        get { return showViewController.model }
-        set { showViewController.setModel(newValue, fullTableReload: true) }
-    }
+final class ShowCoordinator
+{
+    var model: Show?
 
     private let services: ServiceContainer
     private let numberOfPreloadedEpisodes = 2
 
     private var isShowAlreadyExists: Bool? {
-        get { return showViewController.isShowAlreadyExists }
-        set { showViewController.isShowAlreadyExists = newValue }
+        get { return showViewController?.isShowAlreadyExists }
+        set { showViewController?.isShowAlreadyExists = newValue }
     }
 
-    private lazy var showTransitionAnimator = ShowTransitionAnimator()
-
-    private lazy var showViewController: ShowViewController = {
-        let showViewController = ShowViewController()
-        showViewController.delegate = self
-        showViewController.episodesCollectionViewDelegate = self
-        showViewController.episodesCollectionViewDataSource = self
-        showViewController.transitioningDelegate = showTransitionAnimator
-        showViewController.modalPresentationStyle = .custom
-        showViewController.modalPresentationCapturesStatusBarAppearance = true
-        return showViewController
-    }()
+    private weak var showViewController: ShowViewController? {
+        didSet {
+            showViewController?.delegate = self
+            showViewController?.episodesCollectionViewDelegate = self
+            showViewController?.episodesCollectionViewDataSource = self
+        }
+    }
 
     private var episodesCollectionViewEndingItemStyle: EndingCollectionViewCell.Style? {
         guard let show = model, let lastEpisode = show.episodes.last?.value else {
@@ -70,49 +50,49 @@ class ShowCoordinator: Coordinator {
         self.services = services
     }
 
+    static func makeViewController(with model: Show?, services: ServiceContainer) -> ShowViewController {
+        let coordinator = ShowCoordinator(services: services)
+        coordinator.model = model
+
+        let viewController = ShowViewController(coordinator: coordinator)
+
+        return viewController
+    }
+
+    func didLoadView(_ viewController: ShowViewController) {
+        showViewController = viewController
+        setModel(model, fullTableReload: true)
+    }
+
+    func viewDidAppear() {
+        actualizeModel()
+    }
+
     func actualizeModel() {
         guard let show = model else {
             return
         }
 
-        self.isShowAlreadyExists = nil
+        isShowAlreadyExists = nil
 
         services.shows.get(show: show, includingEpisodes: true)
-            .then { existingShow in
+            .then { [weak self] existingShow in
                 if let existingShow = existingShow {
-                    self.isShowAlreadyExists = existingShow.isSoftDeleted == false
-                    self.showViewController.setModel(existingShow, fullTableReload: true, animated: true)
+                    self?.isShowAlreadyExists = existingShow.isSoftDeleted == false
+                    self?.setModel(existingShow, fullTableReload: true, animated: true)
                 } else {
-                    self.services.shows.load(show: show)
+                    self?.services.shows.load(show: show)
                         .then { remoteShow in
-                            self.isShowAlreadyExists = false
-                            self.showViewController.setModel(remoteShow, fullTableReload: true, animated: true)
+                            self?.isShowAlreadyExists = false
+                            self?.setModel(remoteShow, fullTableReload: true, animated: true)
                         }
                 }
             }
     }
-
-    @discardableResult
-    private func addShow() -> Promise<Void> {
-        guard let show = model else {
-            return Promise(value: ())
-        }
-
-        isShowAlreadyExists = nil
-
-        return services.shows.add(show: show)
-            .then { show -> Void in
-                self.isShowAlreadyExists = show != nil
-                self.showViewController.setModel(show, animated: true)
-            }
-    }
 }
 
-extension ShowCoordinator: ShowViewControllerDelegate {
-    func didDisappear(_ showViewConntroller: ShowViewController) {
-        delegate?.didClose(self)
-    }
-
+extension ShowCoordinator: ShowViewControllerDelegate
+{
     func didTapAddButton(in showViewController: ShowViewController) {
         addShow()
     }
@@ -125,14 +105,15 @@ extension ShowCoordinator: ShowViewControllerDelegate {
         isShowAlreadyExists = nil
 
         services.shows.delete(show: show)
-            .then { deletedShow in
-                self.isShowAlreadyExists = false
-                self.showViewController.setModel(deletedShow, animated: true)
+            .then { [weak self] deletedShow in
+                self?.isShowAlreadyExists = false
+                self?.setModel(deletedShow, animated: true)
             }
     }
 }
 
-extension ShowCoordinator: EpisodesCollectionViewDelegate {
+extension ShowCoordinator: EpisodesCollectionViewDelegate
+{
     func episodesCollectionView(_ episodesCollectionView: EpisodesCollectionView,
                                 didScrollFrom page: Int,
                                 to newPage: Int)
@@ -143,13 +124,13 @@ extension ShowCoordinator: EpisodesCollectionViewDelegate {
             return
         }
 
-        let viewShow = {
-            guard let show = self.model, let episode = show.episodes[at: index] else {
+        let viewShow = { [weak self] in
+            guard let show = self?.model, let episode = show.episodes[at: index] else {
                 return
             }
 
-            let updatedShow = self.services.shows.view(episode: episode, of: show, viewed: newPage > page)
-            self.showViewController.setModel(updatedShow, animated: true)
+            let updatedShow = self?.services.shows.view(episode: episode, of: show, viewed: newPage > page)
+            self?.setModel(updatedShow, animated: true)
         }
 
         if isShowAlreadyExists == false, newPage > page, episode.value.isViewed != true {
@@ -168,7 +149,8 @@ extension ShowCoordinator: EpisodesCollectionViewDelegate {
     }
 }
 
-extension ShowCoordinator: EpisodesCollectionViewDataSource {
+extension ShowCoordinator: EpisodesCollectionViewDataSource
+{
     func shouldAppendEndingItem(in episodesCollectionView: EpisodesCollectionView) -> Bool {
         return episodesCollectionViewEndingItemStyle != nil
     }
@@ -192,5 +174,28 @@ extension ShowCoordinator: EpisodesCollectionViewDataSource {
         var episode = episodes[index].value
         episode.stillURL = services.shows.stillURL(for: episode.stillPath)
         return episode
+    }
+}
+
+extension ShowCoordinator
+{
+    @discardableResult
+    private func addShow() -> Promise<Void> {
+        guard let show = model else {
+            return .void
+        }
+
+        isShowAlreadyExists = nil
+
+        return services.shows.add(show: show)
+            .then { [weak self] show -> Void in
+                self?.isShowAlreadyExists = show != nil
+                self?.setModel(show, animated: true)
+            }
+    }
+
+    private func setModel(_ show: Show?, fullTableReload: Bool = false, animated: Bool = false) {
+        model = show
+        showViewController?.setModel(show, fullTableReload: fullTableReload, animated: animated)
     }
 }

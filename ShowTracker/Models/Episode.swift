@@ -6,11 +6,11 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import CoreData
 import Toolkit
 
-struct Episode: Model, Identifiable {
+struct Episode: Model, Identifiable
+{
     var season: Ref<Season>?
 
     var id: Int
@@ -75,7 +75,7 @@ struct Episode: Model, Identifiable {
         seasonNumber = response.seasonNumber ?? 0
         number = response.episodeNumber ?? 0
         name = response.name
-        airDate = response.airDate?.date
+        airDate = response.airDate?.date()
         overview = response.overview
         stillPath = response.stillPath
     }
@@ -109,7 +109,8 @@ struct Episode: Model, Identifiable {
     }
 }
 
-extension Episode {
+extension Episode
+{
     init(from response: TheMovieDBClient.ShowResponse.Episode) {
         self.init(from: response, season: nil)
     }
@@ -119,7 +120,8 @@ extension Episode {
     }
 }
 
-extension EpisodeEntity: KeepingProperties {
+extension EpisodeEntity: KeepingProperties
+{
     public func shouldKeepProperty(_ property: String, databaseValue: Any?, contextValue: Any?) -> Bool {
         return [
             #keyPath(isViewed),

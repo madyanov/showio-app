@@ -6,16 +6,23 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol ShowCollectionViewCellDelegate: AnyObject {
+protocol ShowCollectionViewCellDelegate: AnyObject
+{
     func willDelete(cell: ShowCollectionViewCell)
     func didTap(on cell: ShowCollectionViewCell)
 }
 
-class ShowCollectionViewCell: UICollectionViewCell {
+final class ShowCollectionViewCell: UICollectionViewCell
+{
+    enum Style
+    {
+        case `default`
+        case minimal
+    }
+
     weak var delegate: ShowCollectionViewCellDelegate?
 
     var isPersistentPosterImageCaching = false
@@ -54,7 +61,7 @@ class ShowCollectionViewCell: UICollectionViewCell {
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
         cachedImageView.contentMode = .scaleAspectFill
-        cachedImageView.layer.cornerRadius = 4
+        cachedImageView.layer.cornerRadius = .standardSpacing / 2
         cachedImageView.layer.masksToBounds = true
         return cachedImageView
     }()
@@ -63,14 +70,14 @@ class ShowCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         return stackView
     }()
 
     private lazy var posterContainerView: UIView = {
         let view = UIView()
-        view.layer.shadowRadius = 8
-        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = .standardSpacing
+        view.layer.shadowOffset = CGSize(width: 0, height: .standardSpacing / 2)
         view.layer.shadowOpacity = 0.2
         return view
     }()
@@ -85,7 +92,7 @@ class ShowCollectionViewCell: UICollectionViewCell {
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 4
+        stackView.spacing = .standardSpacing / 2
         return stackView
     }()
 
@@ -118,12 +125,12 @@ class ShowCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = false
-        button.contentEdgeInsets = UIEdgeInsets(dx: 6, dy: 4)
+        button.contentEdgeInsets = UIEdgeInsets(dx: 6, dy: .standardSpacing / 2)
         button.setTitleColor(.white, for: .normal)
         button.setTitle("+4", for: .normal)
         button.setTextStyle(.footnote)
         button.backgroundColor = UIColor.red.withAlphaComponent(0.9)
-        button.layer.cornerRadius = 4
+        button.layer.cornerRadius = .standardSpacing / 2
         return button
     }()
 
@@ -134,7 +141,7 @@ class ShowCollectionViewCell: UICollectionViewCell {
         return longPresGestureRecognizer
     }()
 
-    private lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
+    private lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
 
     private var isDummy = false {
         didSet {
@@ -179,8 +186,11 @@ class ShowCollectionViewCell: UICollectionViewCell {
             progressBarView.trailingAnchor.constraint(equalTo: posterImageView.trailingAnchor),
             progressBarView.bottomAnchor.constraint(equalTo: posterImageView.bottomAnchor),
 
-            numberOfNewEpisodesButton.trailingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: -4),
-            numberOfNewEpisodesButton.topAnchor.constraint(equalTo: posterImageView.topAnchor, constant: 4),
+            numberOfNewEpisodesButton.trailingAnchor.constraint(equalTo: posterImageView.trailingAnchor,
+                                                                constant: -(.standardSpacing / 2)),
+
+            numberOfNewEpisodesButton.topAnchor.constraint(equalTo: posterImageView.topAnchor,
+                                                           constant: .standardSpacing / 2),
         ])
 
         startListenForThemeChange()
@@ -203,11 +213,35 @@ class ShowCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    @objc func deleteAction() {
+    @objc
+    func deleteAction() {
         delegate?.willDelete(cell: self)
     }
+}
 
-    @objc private func didTouch(_ gestureRecognizer: UILongPressGestureRecognizer) {
+extension ShowCollectionViewCell: UIGestureRecognizerDelegate
+{
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                           shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool
+    {
+        return true
+    }
+}
+
+extension ShowCollectionViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
+        progressBarView.backgroundColor = Theme.current.primaryBackgroundColor.withAlphaComponent(0.8)
+        nameLabel.textColor = Theme.current.primaryForegroundColor
+        yearLabel.textColor = Theme.current.secondaryForegroundColor
+    }
+}
+
+extension ShowCollectionViewCell
+{
+    @objc
+    private func didTouch(_ gestureRecognizer: UILongPressGestureRecognizer) {
         guard !isDummy else {
             return
         }
@@ -223,34 +257,12 @@ class ShowCollectionViewCell: UICollectionViewCell {
         })
     }
 
-    @objc private func didTap(_ gestureRecognizer: UITapGestureRecognizer) {
+    @objc
+    private func didTap(_ gestureRecognizer: UITapGestureRecognizer) {
         guard !isDummy, !shouldCancelTapGesture else {
             return
         }
 
         delegate?.didTap(on: self)
-    }
-}
-
-extension ShowCollectionViewCell {
-    enum Style {
-        case `default`
-        case minimal
-    }
-}
-
-extension ShowCollectionViewCell: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                           shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool
-    {
-        return true
-    }
-}
-
-extension ShowCollectionViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
-        progressBarView.backgroundColor = Theme.current.primaryBackgroundColor.withAlphaComponent(0.8)
-        nameLabel.textColor = Theme.current.primaryForegroundColor
-        yearLabel.textColor = Theme.current.secondaryForegroundColor
     }
 }

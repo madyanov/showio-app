@@ -6,15 +6,16 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol ShowTransitionAnimatingSubviews {
+protocol ShowTransitionSubviewsAnimating
+{
     var animatedSubviews: [UIView] { get set }
 }
 
-protocol ShadedAndRounded {
+protocol ShadedAndRounded
+{
     var viewWithShadow: UIView? { get }
     var viewWithRoundedCorners: UIView? { get }
 
@@ -22,19 +23,18 @@ protocol ShadedAndRounded {
     func removeRoundedCornersAndShadow()
 }
 
-extension ShadedAndRounded {
+extension ShadedAndRounded
+{
     func roundCornersAndAddShadow() {
         if let viewWithShadow = viewWithShadow {
-            viewWithShadow.layer.shadowRadius = 16
+            viewWithShadow.layer.shadowRadius = .standardSpacing * 2
             viewWithShadow.layer.shadowOffset = .zero
             viewWithShadow.layer.shadowOpacity = 0.3
             viewWithShadow.layer.masksToBounds = false
 
-            viewWithShadow.layer.shadowPath = UIBezierPath(
-                roundedRect: viewWithShadow.layer.bounds,
-                byRoundingCorners: [.topLeft, .topRight],
-                cornerRadii: CGSize(width: 22, height: 22)
-            ).cgPath
+            viewWithShadow.layer.shadowPath = UIBezierPath(roundedRect: viewWithShadow.layer.bounds,
+                                                           byRoundingCorners: [.topLeft, .topRight],
+                                                           cornerRadii: CGSize(width: 22, height: 22)).cgPath
         }
 
         if let viewWithRoundedCorners = viewWithRoundedCorners {
@@ -52,15 +52,17 @@ extension ShadedAndRounded {
     }
 }
 
-class ShowTransitionAnimator: NSObject {
+final class ShowTransitionAnimator: NSObject
+{
     var maximumRegularWidth: CGFloat = 700
-    var minimumInsets = UIEdgeInsets(top: 16, left: 88, bottom: 0, right: 88)
+    var minimumInsets = UIEdgeInsets(top: .standardSpacing * 2, left: 88, bottom: 0, right: 88)
 
     private var isPresentation = false
 }
 
-extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
-    private typealias ViewControllerAnimatingSubviews = UIViewController & ShowTransitionAnimatingSubviews
+extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning
+{
+    private typealias ViewControllerAnimatingSubviews = UIViewController & ShowTransitionSubviewsAnimating
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return isPresentation ? 0.5 : 0.3
@@ -73,12 +75,42 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
             animateDismission(using: transitionContext)
         }
     }
+}
 
+extension ShowTransitionAnimator: UIViewControllerTransitioningDelegate
+{
+    func animationController(forPresented presented: UIViewController,
+                             presenting: UIViewController,
+                             source: UIViewController) -> UIViewControllerAnimatedTransitioning?
+    {
+        isPresentation = true
+        return self
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        isPresentation = false
+        return self
+    }
+
+    func presentationController(forPresented presented: UIViewController,
+                                presenting: UIViewController?,
+                                source: UIViewController) -> UIPresentationController?
+    {
+        return ShowPresentationController(presentedViewController: presented,
+                                          presenting: presenting,
+                                          maximumRegularWidth: maximumRegularWidth,
+                                          minimumInsets: minimumInsets)
+    }
+}
+
+extension ShowTransitionAnimator
+{
     private func animatePresentation(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let toView = transitionContext.view(forKey: .to),
-              let toViewController = transitionContext.viewController(forKey: .to) as? ViewControllerAnimatingSubviews,
-              let fromNavigationController = transitionContext.viewController(forKey: .from) as? UINavigationController,
-              let fromViewController = fromNavigationController.topViewController as? ViewControllerAnimatingSubviews
+        guard
+            let toView = transitionContext.view(forKey: .to),
+            let toViewController = transitionContext.viewController(forKey: .to) as? ViewControllerAnimatingSubviews,
+            let fromNavigationController = transitionContext.viewController(forKey: .from) as? UINavigationController,
+            let fromViewController = fromNavigationController.topViewController as? ViewControllerAnimatingSubviews
         else {
             return
         }
@@ -90,11 +122,9 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
         toView.frame = finalFrame.offsetBy(dx: 0, dy: finalFrame.size.height)
         toView.layoutIfNeeded()
 
-        let snapshots = initializeAnimatedSnapshots(
-            containerView: containerView,
-            fromViewController: fromViewController,
-            toViewController: toViewController
-        )
+        let snapshots = initializeAnimatedSnapshots(containerView: containerView,
+                                                    fromViewController: fromViewController,
+                                                    toViewController: toViewController)
 
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
@@ -115,11 +145,12 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
     }
 
     private func animateDismission(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromView = transitionContext.view(forKey: .from),
-              let fromViewController = transitionContext.viewController(forKey: .from)
-                  as? ViewControllerAnimatingSubviews,
-              let toNavigationController = transitionContext.viewController(forKey: .to) as? UINavigationController,
-              let toViewController = toNavigationController.topViewController as? ViewControllerAnimatingSubviews
+        guard
+            let fromView = transitionContext.view(forKey: .from),
+            let fromViewController = transitionContext.viewController(forKey: .from)
+                as? ViewControllerAnimatingSubviews,
+            let toNavigationController = transitionContext.viewController(forKey: .to) as? UINavigationController,
+            let toViewController = toNavigationController.topViewController as? ViewControllerAnimatingSubviews
         else {
             return
         }
@@ -128,11 +159,9 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
         let finalFrame = transitionContext.finalFrame(for: fromViewController)
         fromView.frame = finalFrame
 
-        let snapshots = initializeAnimatedSnapshots(
-            containerView: containerView,
-            fromViewController: fromViewController,
-            toViewController: toViewController
-        )
+        let snapshots = initializeAnimatedSnapshots(containerView: containerView,
+                                                    fromViewController: fromViewController,
+                                                    toViewController: toViewController)
 
         UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
             fromView.frame = finalFrame.offsetBy(dx: 0, dy: finalFrame.size.height)
@@ -146,8 +175,8 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
     }
 
     private func initializeAnimatedSnapshots(containerView: UIView,
-                                             fromViewController: ShowTransitionAnimatingSubviews,
-                                             toViewController: ShowTransitionAnimatingSubviews) -> [UIView]
+                                             fromViewController: ShowTransitionSubviewsAnimating,
+                                             toViewController: ShowTransitionSubviewsAnimating) -> [UIView]
     {
         fromViewController.animatedSubviews.forEach { $0.alpha = 1 }
         toViewController.animatedSubviews.forEach { $0.alpha = 1 }
@@ -174,7 +203,7 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
 
     private func animateSnapshots(_ snapshots: [UIView],
                                   containerView: UIView,
-                                  toViewController: ShowTransitionAnimatingSubviews)
+                                  toViewController: ShowTransitionSubviewsAnimating)
     {
         zip(snapshots, toViewController.animatedSubviews).forEach { snapshot, subview in
             snapshot.frame = containerView.convert(subview.frame, from: subview.superview)
@@ -182,7 +211,7 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
     }
 
     private func cleanupSnapshots(_ snapshots: [UIView],
-                                  toViewController: ShowTransitionAnimatingSubviews,
+                                  toViewController: ShowTransitionSubviewsAnimating,
                                   completion: ((Bool) -> Void)? = nil)
     {
         toViewController.animatedSubviews.forEach { $0.alpha = 1 }
@@ -197,34 +226,7 @@ extension ShowTransitionAnimator: UIViewControllerAnimatedTransitioning {
     }
 }
 
-extension ShowTransitionAnimator: UIViewControllerTransitioningDelegate {
-    func animationController(forPresented presented: UIViewController,
-                             presenting: UIViewController,
-                             source: UIViewController) -> UIViewControllerAnimatedTransitioning?
-    {
-        isPresentation = true
-        return self
-    }
-
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        isPresentation = false
-        return self
-    }
-
-    func presentationController(forPresented presented: UIViewController,
-                                presenting: UIViewController?,
-                                source: UIViewController) -> UIPresentationController?
-    {
-        return ShowPresentationController(
-            presentedViewController: presented,
-            presenting: presenting,
-            maximumRegularWidth: maximumRegularWidth,
-            minimumInsets: minimumInsets
-        )
-    }
-}
-
-private class ShowPresentationController: UIPresentationController {
+private final class ShowPresentationController: UIPresentationController {
     private var maximumRegularWidth: CGFloat
     private var minimumInsets: UIEdgeInsets
 
@@ -301,7 +303,10 @@ private class ShowPresentationController: UIPresentationController {
             removeRoundedCornersAndShadow()
         }
     }
+}
 
+extension ShowPresentationController
+{
     private func roundCornersAndAddShadow() {
         if let viewController = presentedViewController as? ShadedAndRounded {
             viewController.roundCornersAndAddShadow()
@@ -314,7 +319,8 @@ private class ShowPresentationController: UIPresentationController {
         }
     }
 
-    @objc private func didTap() {
+    @objc
+    private func didTap() {
         presentingViewController.dismiss(animated: true)
     }
 }

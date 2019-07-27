@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-protocol EpisodesCollectionViewDelegate: AnyObject {
+protocol EpisodesCollectionViewDelegate: AnyObject
+{
     func episodesCollectionView(_ episodesCollectionView: EpisodesCollectionView,
                                 didScrollFrom page: Int,
                                 to newPage: Int)
@@ -17,7 +17,8 @@ protocol EpisodesCollectionViewDelegate: AnyObject {
     func initialPageIndex(in episodesCollectionView: EpisodesCollectionView) -> Int?
 }
 
-protocol EpisodesCollectionViewDataSource: AnyObject {
+protocol EpisodesCollectionViewDataSource: AnyObject
+{
     func numberOfItems(in episodesCollectionView: EpisodesCollectionView) -> Int
     func shouldAppendEndingItem(in episodesCollectionView: EpisodesCollectionView) -> Bool
     func endingItemStyle(in episodeCollectionView: EpisodesCollectionView) -> EndingCollectionViewCell.Style
@@ -26,11 +27,13 @@ protocol EpisodesCollectionViewDataSource: AnyObject {
                                 episodeForItemAt index: Int) -> Episode
 }
 
-extension EpisodesCollectionViewDelegate {
+extension EpisodesCollectionViewDelegate
+{
     func initialPageIndex(in episodesCollectionView: EpisodesCollectionView) -> Int? { return nil }
 }
 
-class EpisodesCollectionView: UIView {
+final class EpisodesCollectionView: UIView
+{
     weak var delegate: EpisodesCollectionViewDelegate? {
         didSet {
             if let initialPageIndex = delegate?.initialPageIndex(in: self) {
@@ -88,8 +91,8 @@ class EpisodesCollectionView: UIView {
     private lazy var collectionViewLayout: EpisodesCollectionViewLayout = {
         let collectionViewLayout = EpisodesCollectionViewLayout()
         collectionViewLayout.scrollDirection = .horizontal
-        collectionViewLayout.minimumLineSpacing = 16
-        collectionViewLayout.minimumInteritemSpacing = 16
+        collectionViewLayout.minimumLineSpacing = .standardSpacing * 2
+        collectionViewLayout.minimumInteritemSpacing = .standardSpacing * 2
         return collectionViewLayout
     }()
 
@@ -160,12 +163,10 @@ class EpisodesCollectionView: UIView {
             additionalSectionInsets = globalSafeAreaInsets
         }
 
-        collectionViewLayout.sectionInset = UIEdgeInsets(
-            top: 16,
-            left: additionalSectionInsets.left + 24,
-            bottom: 16,
-            right: additionalSectionInsets.right + 24
-        )
+        collectionViewLayout.sectionInset = UIEdgeInsets(top: .standardSpacing * 2,
+                                                         left: additionalSectionInsets.left + .standardSpacing * 3,
+                                                         bottom: .standardSpacing * 2,
+                                                         right: additionalSectionInsets.right + .standardSpacing * 3)
 
         scrollView.contentOffset.x = CGFloat(currentPageIndex) * scrollView.bounds.width
         updateScrollViewContentSize()
@@ -205,10 +206,101 @@ class EpisodesCollectionView: UIView {
             updateScrollViewContentSize()
         }
     }
+}
 
+extension EpisodesCollectionView: UICollectionViewDelegateFlowLayout
+{
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize
+    {
+        if let size = cachedItemSize {
+            return size
+        }
+
+        configureCell(sizingEpisodeCollectionViewCell, at: indexPath)
+
+        let size = sizingEpisodeCollectionViewCell.contentView.systemLayoutSizeFitting(
+            CGSize(width: itemWidth, height: 1),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .defaultLow
+        )
+
+        cachedItemSize = size
+        return size
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView == self.scrollView else {
+            return
+        }
+
+        let width = itemWidth + collectionViewLayout.minimumInteritemSpacing
+        collectionView.contentOffset.x = scrollView.contentOffset.x * width / scrollView.bounds.width
+
+        let newPageIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width + 0.5)
+
+        if scrollView.isDragging, newPageIndex != currentPageIndex {
+            delegate?.episodesCollectionView(self, didScrollFrom: currentPageIndex, to: newPageIndex)
+            currentPageIndex = newPageIndex
+        }
+    }
+}
+
+extension EpisodesCollectionView: UICollectionViewDataSource
+{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        var numberOfItems = self.numberOfItems
+
+        if shouldAppendEndingItem {
+            numberOfItems += 1
+        }
+
+        return numberOfItems
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        if shouldAppendEndingItem,
+            indexPath.item >= numberOfItems,
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: endingCellReuseIdentifier,
+                for: indexPath
+            ) as? EndingCollectionViewCell
+        {
+            cell.style = dataSource?.endingItemStyle(in: self) ?? .loading
+            return cell
+        }
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: episodeCellReuseIdentifier, for: indexPath)
+        configureCell(cell, at: indexPath)
+        return cell
+    }
+}
+
+extension EpisodesCollectionView: EpisodeCollectionViewCellDelegate
+{
+    func didTapViewButton(in episodeCollectionViewCell: EpisodeCollectionViewCell) {
+        scrollToNextPage()
+    }
+}
+
+extension EpisodesCollectionView: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
+        overlayView.backgroundColor = Theme.current.primaryBackgroundColor.withAlphaComponent(0.67)
+        activityIndicatorView.style = Theme.current.activityIndicatorStyle
+    }
+}
+
+extension EpisodesCollectionView
+{
     private func configureCell(_ cell: UICollectionViewCell, at indexPath: IndexPath) {
-        guard let episodeCell = cell as? EpisodeCollectionViewCell,
-              var episode = dataSource?.episodesCollectionView(self, episodeForItemAt: indexPath.item)
+        guard
+            let episodeCell = cell as? EpisodeCollectionViewCell,
+            var episode = dataSource?.episodesCollectionView(self, episodeForItemAt: indexPath.item)
         else {
             if let loadingCell = cell as? EndingCollectionViewCell, case .loading = loadingCell.style {
                 collectionView.reloadItems(at: [indexPath])
@@ -247,89 +339,8 @@ class EpisodesCollectionView: UIView {
     }
 }
 
-extension EpisodesCollectionView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize
-    {
-        if let size = cachedItemSize {
-            return size
-        }
-
-        configureCell(sizingEpisodeCollectionViewCell, at: indexPath)
-
-        let size = sizingEpisodeCollectionViewCell.contentView.systemLayoutSizeFitting(
-            CGSize(width: itemWidth, height: 1),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .defaultLow
-        )
-
-        cachedItemSize = size
-        return size
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-
-        let width = itemWidth + collectionViewLayout.minimumInteritemSpacing
-        collectionView.contentOffset.x = scrollView.contentOffset.x * width / scrollView.bounds.width
-
-        let newPageIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width + 0.5)
-
-        if scrollView.isDragging, newPageIndex != currentPageIndex {
-            delegate?.episodesCollectionView(self, didScrollFrom: currentPageIndex, to: newPageIndex)
-            currentPageIndex = newPageIndex
-        }
-    }
-}
-
-extension EpisodesCollectionView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var numberOfItems = self.numberOfItems
-
-        if shouldAppendEndingItem {
-            numberOfItems += 1
-        }
-
-        return numberOfItems
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-        if shouldAppendEndingItem,
-            indexPath.item >= numberOfItems,
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: endingCellReuseIdentifier,
-                for: indexPath
-            ) as? EndingCollectionViewCell
-        {
-            cell.style = dataSource?.endingItemStyle(in: self) ?? .loading
-            return cell
-        }
-
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: episodeCellReuseIdentifier, for: indexPath)
-        configureCell(cell, at: indexPath)
-        return cell
-    }
-}
-
-extension EpisodesCollectionView: EpisodeCollectionViewCellDelegate {
-    func didTapViewButton(in episodeCollectionViewCell: EpisodeCollectionViewCell) {
-        scrollToNextPage()
-    }
-}
-
-extension EpisodesCollectionView: ChangingTheme {
-    @objc func didChangeTheme() {
-        overlayView.backgroundColor = Theme.current.primaryBackgroundColor.withAlphaComponent(0.67)
-        activityIndicatorView.style = Theme.current.activityIndicatorStyle
-    }
-}
-
-private class ScrollView: UIScrollView {
+private class ScrollView: UIScrollView
+{
     override func touchesShouldCancel(in view: UIView) -> Bool {
         if view is UIButton {
             return true

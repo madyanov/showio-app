@@ -6,12 +6,12 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import CoreData
 import UIKit
 import Toolkit
 
-struct Show: Model, Identifiable {
+struct Show: Model, Identifiable
+{
     var id: Int
     var objectID: NSManagedObjectID?
     var originalName: String
@@ -122,10 +122,10 @@ struct Show: Model, Identifiable {
         overview = response.overview
         episodeRunTime = response.episodeRunTime?.first ?? 0
         rating = response.voteCount ?? 0 > 10 ? response.voteAverage ?? 0 : 0
-        firstAirDate = response.firstAirDate?.date
+        firstAirDate = response.firstAirDate?.date()
         inProduction = response.inProduction
-        lastAirDate = response.lastAirDate?.date
-        nextEpisodeAirDate = response.nextEpisodeToAir?.airDate?.date
+        lastAirDate = response.lastAirDate?.date()
+        nextEpisodeAirDate = response.nextEpisodeToAir?.airDate?.date()
         network = response.networks?.first?.name
         country = response.originCountry?.first
         numberOfSeasons = response.numberOfSeasons ?? 0
@@ -152,11 +152,9 @@ struct Show: Model, Identifiable {
                     var fullSeason = fullSeasons.first { $0.seasonNumber == shortSeason.seasonNumber }
                     fullSeason?.id = shortSeason.id
 
-                    return Ref(value: Season(
-                        from: fullSeason ?? shortSeason,
-                        show: Ref(value: self),
-                        includingEpisodes: includingEpisodes
-                    ))
+                    return Ref(value: Season(from: fullSeason ?? shortSeason,
+                                             show: Ref(value: self),
+                                             includingEpisodes: includingEpisodes))
                 }
                 .filter { $0.value.number > 0 && $0.value.airDate ?? Date() < Date() }
                 .sorted { $0.value.number < $1.value.number } ?? []
@@ -240,7 +238,8 @@ struct Show: Model, Identifiable {
     }
 }
 
-extension Show {
+extension Show
+{
     init(from response: TheMovieDBClient.ShowResponse) {
         self.init(from: response, includingEpisodes: false, posterURL: nil, backdropURL: nil)
     }
@@ -250,7 +249,8 @@ extension Show {
     }
 }
 
-extension ShowEntity: KeepingProperties {
+extension ShowEntity: KeepingProperties
+{
     public func shouldKeepProperty(_ property: String, databaseValue: Any?, contextValue: Any?) -> Bool {
         return [
             #keyPath(numberOfViewedEpisodes),

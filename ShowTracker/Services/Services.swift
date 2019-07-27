@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import Toolkit
 
-protocol ServiceContainer {
+protocol ServiceContainer
+{
     var config: PropertyList<ConfigPropertyListTag> { get }
     var shows: ShowsService { get }
     var showStorage: ShowStorage { get }
@@ -18,7 +18,8 @@ protocol ServiceContainer {
     var coreData: CoreData { get }
 }
 
-final class Services: ServiceContainer {
+final class Services: ServiceContainer
+{
     // swiftlint:disable:next force_try
     lazy var config = try! PropertyList<ConfigPropertyListTag>(name: "Config")
 

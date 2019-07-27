@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class EpisodesCollectionViewLayout: UICollectionViewFlowLayout {
+final class EpisodesCollectionViewLayout: UICollectionViewFlowLayout
+{
     private var attributesCache: [UICollectionViewLayoutAttributes] = []
     private var contentSize: CGSize = .zero
     private var bounds: CGRect = .zero
@@ -19,10 +19,11 @@ class EpisodesCollectionViewLayout: UICollectionViewFlowLayout {
     }
 
     override func prepare() {
-        guard let collectionView = collectionView,
-              let delegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout,
-              // workaround to invalidate layout only if bounds size was changed
-              collectionView.bounds.size != bounds.size
+        guard
+            let collectionView = collectionView,
+            let delegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout,
+            // workaround to invalidate layout only if bounds size was changed
+            collectionView.bounds.size != bounds.size
         else {
             return
         }

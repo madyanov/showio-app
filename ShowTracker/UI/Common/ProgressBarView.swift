@@ -6,11 +6,11 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-class ProgressBarView: UIView {
+final class ProgressBarView: UIView
+{
     var progress: CGFloat = 0 {
         didSet { setNeedsLayout() }
     }
@@ -85,8 +85,10 @@ class ProgressBarView: UIView {
     }
 }
 
-extension ProgressBarView: ChangingTheme {
-    @objc func didChangeTheme() {
+extension ProgressBarView: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         filledView.colors = [Theme.current.primaryBrandColor, Theme.current.secondaryBrandColor]
     }
 }

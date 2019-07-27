@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class LoadingTableViewCell: UITableViewCell {
+final class LoadingTableViewCell: UITableViewCell
+{
     private lazy var activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView()
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -47,8 +47,10 @@ class LoadingTableViewCell: UITableViewCell {
     }
 }
 
-extension LoadingTableViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
+extension LoadingTableViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         activityIndicatorView.style = Theme.current.activityIndicatorStyle
     }
 }

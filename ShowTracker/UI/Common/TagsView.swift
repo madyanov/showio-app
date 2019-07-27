@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class TagsView: UIView {
+final class TagsView: UIView
+{
     var tags: [String]? {
         didSet { setNeedsLayout() }
     }
@@ -18,7 +18,7 @@ class TagsView: UIView {
         didSet { setNeedsLayout() }
     }
 
-    var spacing: CGFloat = 8 {
+    var spacing: CGFloat = .standardSpacing {
         didSet { setNeedsLayout() }
     }
 
@@ -67,8 +67,9 @@ class TagsView: UIView {
     }
 }
 
-class TagView: UIButton {
-    var insets = UIEdgeInsets(dx: 8, dy: 4) {
+final class TagView: UIButton
+{
+    var insets = UIEdgeInsets(dx: .standardSpacing, dy: .standardSpacing / 2) {
         didSet { invalidateIntrinsicContentSize() }
     }
 

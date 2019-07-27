@@ -6,11 +6,11 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-class EpisodesTableViewCell: UITableViewCell {
+final class EpisodesTableViewCell: UITableViewCell
+{
     weak var episodesCollectionViewDelegate: EpisodesCollectionViewDelegate? {
         didSet { episodesCollectionView.delegate = episodesCollectionViewDelegate }
     }
@@ -53,7 +53,7 @@ class EpisodesTableViewCell: UITableViewCell {
             topGradientView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
             topGradientView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
             topGradientView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            topGradientView.heightAnchor.constraint(equalToConstant: 16),
+            topGradientView.heightAnchor.constraint(equalToConstant: .standardSpacing * 2),
         ])
 
         startListenForThemeChange()
@@ -78,8 +78,10 @@ class EpisodesTableViewCell: UITableViewCell {
     }
 }
 
-extension EpisodesTableViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
+extension EpisodesTableViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         topGradientView.colors = [Theme.current.primaryBackgroundColor, Theme.current.clearBackgroundColor]
     }
 }

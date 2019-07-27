@@ -6,31 +6,28 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol EpisodeCollectionViewCellDelegate: AnyObject {
+protocol EpisodeCollectionViewCellDelegate: AnyObject
+{
     func didTapViewButton(in episodeCollectionViewCell: EpisodeCollectionViewCell)
 }
 
-class EpisodeCollectionViewCell: UICollectionViewCell {
+final class EpisodeCollectionViewCell: UICollectionViewCell
+{
     weak var delegate: EpisodeCollectionViewCellDelegate?
 
     var model: Episode? {
         didSet {
             if model != oldValue {
-                stillImageView.setImage(
-                    with: model?.stillURL,
-                    placeholderURL: model?.show?.value.backdropURL ?? model?.show?.value.posterURL
-                )
+                stillImageView.setImage(with: model?.stillURL,
+                                        placeholderURL: model?.show?.value.backdropURL ?? model?.show?.value.posterURL)
             }
 
-            seasonAndEpisodeLabel.text = "S%02dE%02d".localized(
-                comment: "Season & episode number",
-                model?.seasonNumber ?? 0,
-                model?.number ?? 0
-            )
+            seasonAndEpisodeLabel.text = "S%02dE%02d".localized(comment: "Season & episode number",
+                                                                model?.seasonNumber ?? 0,
+                                                                model?.number ?? 0)
 
             nameLabel.text = model?.name
             overviewText.text = model?.overview
@@ -49,7 +46,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 16
+        stackView.spacing = .standardSpacing * 2
         return stackView
     }()
 
@@ -57,7 +54,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         let cachedImageView = CachedImageView()
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
-        cachedImageView.layer.cornerRadius = 8
+        cachedImageView.layer.cornerRadius = .standardSpacing
         cachedImageView.layer.masksToBounds = true
         cachedImageView.contentMode = .scaleAspectFill
         return cachedImageView
@@ -66,7 +63,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
     private lazy var headerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         stackView.alignment = .center
         return stackView
     }()
@@ -75,7 +72,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 4
+        stackView.spacing = .standardSpacing / 2
         return stackView
     }()
 
@@ -100,9 +97,8 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.alpha = 0
         button.highlightedAlpha = 0.5
-        button.tintColor = .white
-        button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = .standardSpacing
         button.setImage(UIImage(named: "eye-20"), for: .normal)
         button.addTarget(self, action: #selector(didTapViewButton), for: .touchUpInside)
         return button
@@ -119,7 +115,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
 
     private lazy var airDateContainerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 8
+        view.layer.cornerRadius = .standardSpacing / 2
         return view
     }()
 
@@ -203,7 +199,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    private lazy var buttonSize = CGSize(width: 44, height: 44)
+    private lazy var buttonSize = CGSize(width: .tappableSize, height: .tappableSize)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -223,7 +219,7 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         airDateStacKView.addArrangedSubview(airDateLabel)
         contentStackView.addArrangedSubview(overviewText)
 
-        airDateStacKView.snap(insets: UIEdgeInsets(12), priority: .highest)
+        airDateStacKView.snap(insets: UIEdgeInsets(.standardSpacing * 1.5), priority: .highest)
 
         buttonContainerView.size(buttonSize)
         unseeButton.snap()
@@ -258,23 +254,27 @@ class EpisodeCollectionViewCell: UICollectionViewCell {
         overviewText.isCollapsed = true
         stillImageView.alpha = 1
     }
-
-    @objc private func didTapViewButton() {
-        delegate?.didTapViewButton(in: self)
-    }
 }
 
-extension EpisodeCollectionViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
+extension EpisodeCollectionViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         seasonAndEpisodeLabel.textColor = Theme.current.primaryForegroundColor
         nameLabel.textColor = Theme.current.primaryForegroundColor
         unseeButton.tintColor = Theme.current.primaryBrandColor
         airDateContainerView.backgroundColor = Theme.current.primaryBrandColor.withAlphaComponent(0.05)
         airDateImageView.tintColor = Theme.current.primaryBrandColor
         airDateLabel.textColor = Theme.current.primaryBrandColor
+        viewButton.tintColor = Theme.current.primaryBrandColor
+        viewButton.layer.borderColor = Theme.current.primaryBrandColor.cgColor
+    }
+}
 
-        viewButton.addGradient(
-            colors: [Theme.current.primaryBrandColor, Theme.current.secondaryBrandColor]
-        )
+extension EpisodeCollectionViewCell
+{
+    @objc
+    private func didTapViewButton() {
+        delegate?.didTapViewButton(in: self)
     }
 }

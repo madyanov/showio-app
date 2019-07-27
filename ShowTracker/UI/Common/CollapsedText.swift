@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class CollapsedText: UIView {
+final class CollapsedText: UIView
+{
     var isCollapsed = true {
         didSet {
             if isCollapsed {
@@ -100,16 +100,22 @@ class CollapsedText: UIView {
 
         startListenForThemeChange()
     }
+}
 
-    @objc private func didTapReadMoreButton() {
-        isCollapsed.toggle()
-        onTapReadMoreButton?()
+extension CollapsedText: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
+        textLabel.textColor = Theme.current.primaryForegroundColor
+        readMoreButton.setTitleColor(Theme.current.primaryBrandColor, for: .normal)
     }
 }
 
-extension CollapsedText: ChangingTheme {
-    @objc func didChangeTheme() {
-        textLabel.textColor = Theme.current.primaryForegroundColor
-        readMoreButton.setTitleColor(Theme.current.primaryBrandColor, for: .normal)
+extension CollapsedText
+{
+    @objc
+    private func didTapReadMoreButton() {
+        isCollapsed.toggle()
+        onTapReadMoreButton?()
     }
 }

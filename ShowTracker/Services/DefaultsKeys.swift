@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import Toolkit
 
-extension DefaultsKeys {
+extension DefaultsKeys
+{
     static let lastLaunchDate = DefaultsKey<Date>("lastLaunchDate")
     static let currentTheme = DefaultsKey<String>("currentTheme")
 }

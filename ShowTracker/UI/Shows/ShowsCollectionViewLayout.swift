@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class ShowsCollectionViewLayout: UICollectionViewFlowLayout {
+final class ShowsCollectionViewLayout: UICollectionViewFlowLayout
+{
     override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath)
         -> UICollectionViewLayoutAttributes?
     {
@@ -38,7 +38,10 @@ class ShowsCollectionViewLayout: UICollectionViewFlowLayout {
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return newBounds.size != collectionView?.bounds.size
     }
+}
 
+extension ShowsCollectionViewLayout
+{
     private func updateLayoutAttributes(_ layoutAttributes: UICollectionViewLayoutAttributes?) {
         layoutAttributes?.alpha = 0
         layoutAttributes?.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)

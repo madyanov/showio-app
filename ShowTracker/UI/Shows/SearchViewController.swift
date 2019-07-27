@@ -6,24 +6,32 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-protocol SearchViewControllerDelegate: AnyObject {
-    func didDisappear(_ searchViewController: SearchViewController)
+protocol SearchViewControllerDelegate: AnyObject
+{
     func didChangeSearchQuery(in searchViewController: SearchViewController)
 }
 
-class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
+final class SearchViewController: UIViewController, ShowTransitionSubviewsAnimating
+{
     weak var delegate: SearchViewControllerDelegate?
-    weak var showsCollectionViewDelegate: ShowsCollectionViewDelegate?
-    weak var showsCollectionViewDataSource: ShowsCollectionViewDataSource?
+
+    weak var showsCollectionViewDelegate: ShowsCollectionViewDelegate? {
+        didSet { showsCollectionView.delegate = showsCollectionViewDelegate }
+    }
+
+    weak var showsCollectionViewDataSource: ShowsCollectionViewDataSource? {
+        didSet { showsCollectionView.dataSource = showsCollectionViewDataSource }
+    }
 
     var animatedSubviews: [UIView] = []
 
     var searchQuery: String? {
         return searchController.searchBar.text
     }
+
+    private let coordinator: SearchCoordinator
 
     private var blurEffect = UIBlurEffect()
 
@@ -46,8 +54,6 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
         let showsCollectionView = ShowsCollectionView()
         showsCollectionView.translatesAutoresizingMaskIntoConstraints = false
         showsCollectionView.style = traitCollection.userInterfaceIdiom == .pad ? .default : .minimal
-        showsCollectionView.delegate = showsCollectionViewDelegate
-        showsCollectionView.dataSource = showsCollectionViewDataSource
         return showsCollectionView
     }()
 
@@ -87,16 +93,28 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
         return Theme.current.statusBarStyle
     }
 
+    init(coordinator: SearchCoordinator) {
+        self.coordinator = coordinator
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
         definesPresentationContext = true
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "chevron-left-20"),
-            style: .plain,
-            target: navigationController,
-            action: #selector(UINavigationController.popViewController(animated:))
-        )
+        let backButtonSelector = #selector(UINavigationController.popViewController(animated:))
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "chevron-left-20"),
+                                                           style: .plain,
+                                                           target: navigationController,
+                                                           action: backButtonSelector)
 
         navigationItem.titleView = searchController.searchBar
         navigationController?.interactivePopGestureRecognizer?.delegate = self
@@ -131,6 +149,8 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
         ])
 
         startListenForThemeChange()
+
+        coordinator.didLoadView(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -143,6 +163,9 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        // memory leak fix
+        searchController.isActive = false
 
         transitionCoordinator?.animate(alongsideTransition: { _ in
             self.blurredHeaderView.effect = nil
@@ -158,7 +181,6 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         searchController.searchBar.text = nil
-        delegate?.didDisappear(self)
     }
 
     override func viewDidLayoutSubviews() {
@@ -192,17 +214,10 @@ class SearchViewController: UIViewController, ShowTransitionAnimatingSubviews {
     func hideKeyboard() {
         searchController.searchBar.resignFirstResponder()
     }
-
-    @objc private func didTapPoweredByLabel() {
-        guard let url = URL(string: "https://www.themoviedb.org/") else {
-            return
-        }
-
-        UIApplication.shared.open(url)
-    }
 }
 
-extension SearchViewController: UISearchControllerDelegate {
+extension SearchViewController: UISearchControllerDelegate
+{
     func didPresentSearchController(_ searchController: UISearchController) {
         // workaround to show keyboard once view appeared
         DispatchQueue.main.async {
@@ -219,7 +234,8 @@ extension SearchViewController: UISearchControllerDelegate {
     }
 }
 
-extension SearchViewController: UISearchResultsUpdating {
+extension SearchViewController: UISearchResultsUpdating
+{
     func updateSearchResults(for searchController: UISearchController) {
         delegate?.didChangeSearchQuery(in: self)
     }
@@ -227,8 +243,10 @@ extension SearchViewController: UISearchResultsUpdating {
 
 extension SearchViewController: UIGestureRecognizerDelegate { }
 
-extension SearchViewController: ChangingTheme {
-    @objc func didChangeTheme() {
+extension SearchViewController: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         setNeedsStatusBarAppearanceUpdate()
 
         view.backgroundColor = Theme.current.primaryBackgroundColor
@@ -239,5 +257,17 @@ extension SearchViewController: ChangingTheme {
 
         blurEffect = UIBlurEffect(style: Theme.current.blurStyle)
         blurredHeaderView.effect = blurEffect
+    }
+}
+
+extension SearchViewController
+{
+    @objc
+    private func didTapPoweredByLabel() {
+        guard let url = URL(string: "https://www.themoviedb.org/") else {
+            return
+        }
+
+        UIApplication.shared.open(url)
     }
 }

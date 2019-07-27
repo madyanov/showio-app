@@ -8,18 +8,5 @@
 	<string></string>
 	<key>TMDB API Key</key>
 	<string></string>
-	<key>AdMob Enabled</key>
-	<false/>
-	<key>AdMob Application ID</key>
-	<string></string>
-	<key>AdMob Banners</key>
-	<dict>
-		<key>shows_bottom</key>
-		<string></string>
-	</dict>
-	<key>AdMob Test Devices</key>
-	<array>
-		<string></string>
-	</array>
 </dict>
 </plist>

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-protocol ShowsCollectionViewDelegate: AnyObject {
+protocol ShowsCollectionViewDelegate: AnyObject
+{
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView,
                              didTapOn cell: ShowCollectionViewCell,
                              at index: Int)
@@ -17,21 +17,31 @@ protocol ShowsCollectionViewDelegate: AnyObject {
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView, didTapDeleteButtonForItemAt index: Int)
 }
 
-extension ShowsCollectionViewDelegate {
+extension ShowsCollectionViewDelegate
+{
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView, didTapDeleteButtonForItemAt index: Int) { }
 }
 
-protocol ShowsCollectionViewDataSource: AnyObject {
+protocol ShowsCollectionViewDataSource: AnyObject
+{
     func numberOfItems(in showsCollectionView: ShowsCollectionView) -> Int
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView, showForItemAt index: Int) -> Show
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView, prefetchItemsAt indices: [Int])
 }
 
-extension ShowsCollectionViewDataSource {
+extension ShowsCollectionViewDataSource
+{
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView, prefetchItemsAt indices: [Int]) { }
 }
 
-class ShowsCollectionView: UIView {
+final class ShowsCollectionView: UIView
+{
+    enum Style
+    {
+        case `default`
+        case minimal
+    }
+
     weak var delegate: ShowsCollectionViewDelegate?
     weak var dataSource: ShowsCollectionViewDataSource?
 
@@ -83,16 +93,14 @@ class ShowsCollectionView: UIView {
         super.layoutSubviews()
         cachedItemSize = nil
 
-        let spacing: CGFloat = style == .minimal ? 16 : 24
+        let spacing: CGFloat = style == .minimal ? .standardSpacing * 2 : .standardSpacing * 3
         collectionViewLayout.minimumInteritemSpacing = spacing
         collectionViewLayout.minimumLineSpacing = spacing
 
-        collectionViewLayout.sectionInset = UIEdgeInsets(
-            top: spacing + additionalVerticalInset,
-            left: spacing,
-            bottom: spacing,
-            right: spacing
-        )
+        collectionViewLayout.sectionInset = UIEdgeInsets(top: spacing + additionalVerticalInset,
+                                                         left: spacing,
+                                                         bottom: spacing,
+                                                         right: spacing)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -103,18 +111,14 @@ class ShowsCollectionView: UIView {
 
     override func willMove(toWindow newWindow: UIWindow?) {
         if newWindow != nil {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(keyboardWillChangeFrame),
-                name: UIResponder.keyboardWillChangeFrameNotification,
-                object: nil
-            )
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(keyboardWillChangeFrame),
+                                                   name: UIResponder.keyboardWillChangeFrameNotification,
+                                                   object: nil)
         } else {
-            NotificationCenter.default.removeObserver(
-                self,
-                name: UIResponder.keyboardWillChangeFrameNotification,
-                object: nil
-            )
+            NotificationCenter.default.removeObserver(self,
+                                                      name: UIResponder.keyboardWillChangeFrameNotification,
+                                                      object: nil)
         }
     }
 
@@ -143,61 +147,10 @@ class ShowsCollectionView: UIView {
     func cellForItem(at indexPath: IndexPath) -> ShowCollectionViewCell? {
         return collectionView.cellForItem(at: indexPath) as? ShowCollectionViewCell
     }
-
-    private func configureCell(_ cell: UICollectionViewCell, at indexPath: IndexPath) {
-        guard let cell = cell as? ShowCollectionViewCell,
-              var show = dataSource?.showsCollectionView(self, showForItemAt: indexPath.item)
-        else {
-            return
-        }
-
-        if cell == sizingShowCollectionViewCell {
-            show.posterURL = nil
-            show.backdropURL = nil
-        }
-
-        cell.delegate = self
-        cell.style = style == .minimal ? .minimal : .default
-        cell.isPersistentPosterImageCaching = isPersistentPosterImageCaching
-        cell.model = show
-    }
-
-    private func scrollToTop() {
-        if #available(iOS 11.0, *) {
-            let offset = CGPoint(
-                x: -collectionView.adjustedContentInset.left,
-                y: -collectionView.adjustedContentInset.top
-            )
-
-            collectionView.setContentOffset(offset, animated: true)
-        } else {
-            let offset = CGPoint(x: -collectionView.contentInset.left, y: -collectionView.contentInset.top)
-            collectionView.setContentOffset(offset, animated: true)
-        }
-    }
-
-    @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-        guard let window = UIApplication.shared.windows.first,
-              let userInfo = notification.userInfo,
-              let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-        else {
-            return
-        }
-
-        let keyboardHeight = window.bounds.height - keyboardFrame.minY
-        collectionView.contentInset.bottom = keyboardHeight
-        collectionView.scrollIndicatorInsets.bottom = keyboardHeight
-    }
 }
 
-extension ShowsCollectionView {
-    enum Style {
-        case `default`
-        case minimal
-    }
-}
-
-extension ShowsCollectionView: UICollectionViewDelegateFlowLayout {
+extension ShowsCollectionView: UICollectionViewDelegateFlowLayout
+{
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath)
@@ -217,10 +170,8 @@ extension ShowsCollectionView: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
         UIMenuController.shared.menuItems = [
-            UIMenuItem(
-                title: "Delete".localized(comment: "Delete menu item title"),
-                action: #selector(ShowCollectionViewCell.deleteAction)
-            ),
+            UIMenuItem(title: "Delete".localized(comment: "Delete menu item title"),
+                       action: #selector(ShowCollectionViewCell.deleteAction)),
         ]
 
         let cell = collectionView.cellForItem(at: indexPath) as? ShowCollectionViewCell
@@ -284,7 +235,8 @@ extension ShowsCollectionView: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension ShowsCollectionView: UICollectionViewDataSource {
+extension ShowsCollectionView: UICollectionViewDataSource
+{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dataSource?.numberOfItems(in: self) ?? 0
     }
@@ -298,13 +250,15 @@ extension ShowsCollectionView: UICollectionViewDataSource {
     }
 }
 
-extension ShowsCollectionView: UICollectionViewDataSourcePrefetching {
+extension ShowsCollectionView: UICollectionViewDataSourcePrefetching
+{
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         dataSource?.showsCollectionView(self, prefetchItemsAt: indexPaths.map { $0.item })
     }
 }
 
-extension ShowsCollectionView: ShowCollectionViewCellDelegate {
+extension ShowsCollectionView: ShowCollectionViewCellDelegate
+{
     func willDelete(cell: ShowCollectionViewCell) {
         if let indexPath = collectionView.indexPath(for: cell) {
             delegate?.showsCollectionView(self, didTapDeleteButtonForItemAt: indexPath.item)
@@ -318,8 +272,59 @@ extension ShowsCollectionView: ShowCollectionViewCellDelegate {
     }
 }
 
-extension ShowsCollectionView: ChangingTheme {
-    @objc func didChangeTheme() {
+extension ShowsCollectionView: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         collectionView.indicatorStyle = Theme.current.scrollIndicatorStyle
+    }
+}
+
+extension ShowsCollectionView
+{
+    private func configureCell(_ cell: UICollectionViewCell, at indexPath: IndexPath) {
+        guard
+            let cell = cell as? ShowCollectionViewCell,
+            var show = dataSource?.showsCollectionView(self, showForItemAt: indexPath.item)
+        else {
+            return
+        }
+
+        if cell == sizingShowCollectionViewCell {
+            show.posterURL = nil
+            show.backdropURL = nil
+        }
+
+        cell.delegate = self
+        cell.style = style == .minimal ? .minimal : .default
+        cell.isPersistentPosterImageCaching = isPersistentPosterImageCaching
+        cell.model = show
+    }
+
+    private func scrollToTop() {
+        if #available(iOS 11.0, *) {
+            let offset = CGPoint(x: -collectionView.adjustedContentInset.left,
+                                 y: -collectionView.adjustedContentInset.top)
+
+            collectionView.setContentOffset(offset, animated: true)
+        } else {
+            let offset = CGPoint(x: -collectionView.contentInset.left, y: -collectionView.contentInset.top)
+            collectionView.setContentOffset(offset, animated: true)
+        }
+    }
+
+    @objc
+    private func keyboardWillChangeFrame(_ notification: Notification) {
+        guard
+            let window = UIApplication.shared.windows.first,
+            let userInfo = notification.userInfo,
+            let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        else {
+            return
+        }
+
+        let keyboardHeight = window.bounds.height - keyboardFrame.minY
+        collectionView.contentInset.bottom = keyboardHeight
+        collectionView.scrollIndicatorInsets.bottom = keyboardHeight
     }
 }

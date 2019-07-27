@@ -6,10 +6,17 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class EndingCollectionViewCell: UICollectionViewCell {
+final class EndingCollectionViewCell: UICollectionViewCell
+{
+    enum Style
+    {
+        case loading
+        case finished
+        case pending(String?)
+    }
+
     var style = Style.loading {
         didSet {
             activityIndicatorView.isHidden = true
@@ -103,16 +110,10 @@ class EndingCollectionViewCell: UICollectionViewCell {
     }
 }
 
-extension EndingCollectionViewCell {
-    enum Style {
-        case loading
-        case finished
-        case pending(String?)
-    }
-}
-
-extension EndingCollectionViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
+extension EndingCollectionViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         finishFlagImageView.tintColor = Theme.current.primaryBrandColor.withAlphaComponent(0.67)
         clockImageView.tintColor = Theme.current.primaryBrandColor.withAlphaComponent(0.67)
         nextEpisodeAirDateLabel.textColor = Theme.current.primaryBrandColor

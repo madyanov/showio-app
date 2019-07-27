@@ -6,47 +6,35 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol SearchCoordinatorDelegate: AnyObject {
-    func didClose(_ searchCoordinator: SearchCoordinator)
-}
-
-class SearchCoordinator: Coordinator {
-    weak var delegate: SearchCoordinatorDelegate?
-
-    var childCoordinators: [Coordinator] = []
-
-    var viewController: UIViewController {
-        return searchViewController
+final class SearchCoordinator
+{
+    private weak var searchViewController: SearchViewController? {
+        didSet {
+            searchViewController?.delegate = self
+            searchViewController?.showsCollectionViewDelegate = self
+            searchViewController?.showsCollectionViewDataSource = self
+        }
     }
 
-    private lazy var searchViewController: SearchViewController = {
-        let searchViewController = SearchViewController()
-        searchViewController.delegate = self
-        searchViewController.showsCollectionViewDelegate = self
-        searchViewController.showsCollectionViewDataSource = self
-        return searchViewController
-    }()
-
-    private lazy var debouncedSearchRequest = debounce(0.67) { (query: String) in
-        guard query == self.searchViewController.searchQuery else {
-            self.searchViewController.stopActivityIndicator()
+    private lazy var debouncedSearchRequest = debounce(0.67) { [weak self] (query: String) in
+        guard query == self?.searchViewController?.searchQuery else {
+            self?.searchViewController?.stopActivityIndicator()
             return
         }
 
-        self.services.shows.search(query: query)
+        self?.services.shows.search(query: query)
             .then { shows in
-                guard query == self.searchViewController.searchQuery else {
+                guard query == self?.searchViewController?.searchQuery else {
                     return
                 }
 
-                self.shows = shows
-                self.query = query
+                self?.shows = shows
+                self?.query = query
             }
-            .finally { self.searchViewController.stopActivityIndicator() }
+            .finally { self?.searchViewController?.stopActivityIndicator() }
     }
 
     private let services: ServiceContainer
@@ -58,46 +46,29 @@ class SearchCoordinator: Coordinator {
                 return
             }
 
-            searchViewController.reloadShows()
+            searchViewController?.reloadShows()
         }
-    }
-
-    func start() {
-        loadTrendingShows()
-    }
-
-    private func clearSearchResults() {
-        shows = []
-        query = nil
-    }
-
-    private func loadTrendingShows() {
-        searchViewController.startActivityIndicator()
-
-        self.services.shows.trending()
-            .then { shows in
-                self.shows = shows
-                self.query = nil
-            }
-            .finally { self.searchViewController.stopActivityIndicator() }
-    }
-
-    private func makeShowCoordinator() -> ShowCoordinator {
-        let showCoordinator = ShowCoordinator(services: services)
-        showCoordinator.delegate = self
-        return showCoordinator
     }
 
     init(services: ServiceContainer) {
         self.services = services
     }
-}
 
-extension SearchCoordinator: SearchViewControllerDelegate {
-    func didDisappear(_ searchViewController: SearchViewController) {
-        delegate?.didClose(self)
+    static func makeViewController(with services: ServiceContainer) -> SearchViewController {
+        let coordinator = SearchCoordinator(services: services)
+        let viewController = SearchViewController(coordinator: coordinator)
+        return viewController
     }
 
+    func didLoadView(_ viewController: SearchViewController) {
+        searchViewController = viewController
+
+        loadTrendingShows()
+    }
+}
+
+extension SearchCoordinator: SearchViewControllerDelegate
+{
     func didChangeSearchQuery(in searchViewController: SearchViewController) {
         guard let query = searchViewController.searchQuery, !query.isEmpty else {
             loadTrendingShows()
@@ -114,25 +85,21 @@ extension SearchCoordinator: SearchViewControllerDelegate {
     }
 }
 
-extension SearchCoordinator: ShowsCollectionViewDelegate {
+extension SearchCoordinator: ShowsCollectionViewDelegate
+{
     func showsCollectionView(_ showsCollectionView: ShowsCollectionView,
                              didTapOn cell: ShowCollectionViewCell,
                              at index: Int)
     {
-        let showCoordinator = makeShowCoordinator()
-        showCoordinator.model = shows[at: index]
-        startCoordinator(showCoordinator)
-
-        searchViewController.animatedSubviews = [cell.posterImageView]
-        searchViewController.hideKeyboard()
-
-        searchViewController.present(showCoordinator.viewController, animated: true) {
-            showCoordinator.actualizeModel()
-        }
+        let showViewController = ShowCoordinator.makeViewController(with: shows[at: index], services: services)
+        searchViewController?.animatedSubviews = [cell.posterImageView]
+        searchViewController?.hideKeyboard()
+        searchViewController?.present(showViewController, animated: true)
     }
 }
 
-extension SearchCoordinator: ShowsCollectionViewDataSource {
+extension SearchCoordinator: ShowsCollectionViewDataSource
+{
     func numberOfItems(in showsCollectionView: ShowsCollectionView) -> Int {
         return shows.count
     }
@@ -142,8 +109,23 @@ extension SearchCoordinator: ShowsCollectionViewDataSource {
     }
 }
 
-extension SearchCoordinator: ShowCoordinatorDelegate {
-    func didClose(_ showCoordinator: ShowCoordinator) {
-        stopCoordinator(showCoordinator)
+extension SearchCoordinator
+{
+    private func clearSearchResults() {
+        shows = []
+        query = nil
+    }
+
+    private func loadTrendingShows() {
+        searchViewController?.startActivityIndicator()
+
+        self.services.shows.trending()
+            .then { [weak self] shows in
+                self?.shows = shows
+                self?.query = nil
+            }
+            .finally { [weak self] in
+                self?.searchViewController?.stopActivityIndicator()
+            }
     }
 }

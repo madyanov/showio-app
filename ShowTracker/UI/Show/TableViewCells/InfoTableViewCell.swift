@@ -6,16 +6,17 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol InfoTableViewCellDelegate: AnyObject {
+protocol InfoTableViewCellDelegate: AnyObject
+{
     func didTapAddButton(in infoTableViewCell: InfoTableViewCell)
     func didTapDeleteButton(in infoTableViewCell: InfoTableViewCell)
 }
 
-class InfoTableViewCell: UITableViewCell {
+final class InfoTableViewCell: UITableViewCell
+{
     weak var delegate: InfoTableViewCellDelegate?
 
     var model: Show? {
@@ -81,7 +82,7 @@ class InfoTableViewCell: UITableViewCell {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = .center
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         return stackView
     }()
 
@@ -118,9 +119,8 @@ class InfoTableViewCell: UITableViewCell {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.alpha = 0
         button.highlightedAlpha = 0.5
-        button.tintColor = .white
-        button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = .standardSpacing
         button.setImage(UIImage(named: "plus-20"), for: .normal)
         button.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         return button
@@ -142,7 +142,7 @@ class InfoTableViewCell: UITableViewCell {
         return view
     }()
 
-    private lazy var buttonSize = CGSize(width: 44, height: 44)
+    private lazy var buttonSize = CGSize(width: .tappableSize, height: .tappableSize)
 
     override init(style: CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -158,7 +158,7 @@ class InfoTableViewCell: UITableViewCell {
         buttonContainerView.addSubview(deleteButton)
         contentView.addSubview(bottomLineView)
 
-        contentStackView.snap(insets: UIEdgeInsets(dx: 24, dy: 16))
+        contentStackView.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
         starImageView.snap(insets: UIEdgeInsets(top: 0, left: 0, bottom: 3, right: 0))
 
         buttonContainerView.size(buttonSize)
@@ -169,7 +169,7 @@ class InfoTableViewCell: UITableViewCell {
             infoStackView.trailingAnchor.constraint(lessThanOrEqualTo: infoContainerView.trailingAnchor),
             infoStackView.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor),
 
-            bottomLineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            bottomLineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .standardSpacing * 3),
             bottomLineView.trailingAnchor.constraint(equalTo: trailingAnchor),
             bottomLineView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             bottomLineView.heightAnchor.constraint(equalToConstant: 0.5),
@@ -183,8 +183,25 @@ class InfoTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    @objc private func didTapAddButton() {
+extension InfoTableViewCell: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
+        infoLabel.textColor = Theme.current.primaryForegroundColor
+        starImageView.tintColor = Theme.current.ratingColor
+        deleteButton.tintColor = Theme.current.primaryBrandColor
+        bottomLineView.backgroundColor = Theme.current.primaryForegroundColor.withAlphaComponent(0.1)
+        addButton.tintColor = Theme.current.primaryBrandColor
+        addButton.layer.borderColor = Theme.current.primaryBrandColor.cgColor
+    }
+}
+
+extension InfoTableViewCell
+{
+    @objc
+    private func didTapAddButton() {
         guard isShowAlreadyExists == false else {
             return
         }
@@ -192,24 +209,12 @@ class InfoTableViewCell: UITableViewCell {
         delegate?.didTapAddButton(in: self)
     }
 
-    @objc private func didTapDeleteButton() {
+    @objc
+    private func didTapDeleteButton() {
         guard isShowAlreadyExists == true else {
             return
         }
 
         delegate?.didTapDeleteButton(in: self)
-    }
-}
-
-extension InfoTableViewCell: ChangingTheme {
-    @objc func didChangeTheme() {
-        infoLabel.textColor = Theme.current.primaryForegroundColor
-        starImageView.tintColor = Theme.current.ratingColor
-        deleteButton.tintColor = Theme.current.primaryBrandColor
-        bottomLineView.backgroundColor = Theme.current.primaryForegroundColor.withAlphaComponent(0.1)
-
-        addButton.addGradient(
-            colors: [Theme.current.primaryBrandColor, Theme.current.secondaryBrandColor]
-        )
     }
 }

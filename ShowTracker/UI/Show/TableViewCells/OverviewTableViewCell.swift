@@ -6,11 +6,11 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-class OverviewTableViewCell: UITableViewCell {
+final class OverviewTableViewCell: UITableViewCell
+{
     var model: Show? {
         didSet { overviewText.text = model?.overview }
     }
@@ -34,7 +34,7 @@ class OverviewTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         contentView.addSubview(overviewText)
-        overviewText.snap(insets: UIEdgeInsets(dx: 24, dy: 16))
+        overviewText.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
     }
 
     @available(*, unavailable)

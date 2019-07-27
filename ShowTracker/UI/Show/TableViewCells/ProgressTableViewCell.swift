@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class ProgressTableViewCell: UITableViewCell {
+final class ProgressTableViewCell: UITableViewCell
+{
     private lazy var progressView: ProgressView = {
         let progressView = ProgressView()
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -21,7 +21,7 @@ class ProgressTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         contentView.addSubview(progressView)
-        progressView.snap(insets: UIEdgeInsets(dx: 24, dy: 16))
+        progressView.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
     }
 
     @available(*, unavailable)

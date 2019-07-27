@@ -6,17 +6,17 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Toolkit
 
-protocol ShowViewControllerDelegate: AnyObject {
-    func didDisappear(_ showViewConntroller: ShowViewController)
+protocol ShowViewControllerDelegate: AnyObject
+{
     func didTapAddButton(in showViewController: ShowViewController)
     func didTapDeleteButton(in showViewController: ShowViewController)
 }
 
-class ShowViewController: UIViewController {
+final class ShowViewController: UIViewController
+{
     weak var delegate: ShowViewControllerDelegate?
     weak var episodesCollectionViewDelegate: EpisodesCollectionViewDelegate?
     weak var episodesCollectionViewDataSource: EpisodesCollectionViewDataSource?
@@ -32,8 +32,10 @@ class ShowViewController: UIViewController {
         }
     }
 
+    private let coordinator: ShowCoordinator
+
     private let posterHeight: CGFloat = 170
-    private let posterOverlapping: CGFloat = 24
+    private let posterOverlapping: CGFloat = .standardSpacing * 3
     private let collapsedHeaderHeight: CGFloat = 44
 
     private var expandedHeaderHeight: CGFloat {
@@ -120,15 +122,15 @@ class ShowViewController: UIViewController {
     private lazy var posterStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         stackView.alignment = .bottom
         return stackView
     }()
 
     private lazy var posterImageContainerView: UIView = {
         let view = UIView()
-        view.layer.shadowRadius = 8
-        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = .standardSpacing
+        view.layer.shadowOffset = CGSize(width: 0, height: .standardSpacing / 2)
         view.layer.shadowOpacity = 0.2
         return view
     }()
@@ -138,14 +140,14 @@ class ShowViewController: UIViewController {
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
         cachedImageView.contentMode = .scaleAspectFill
-        cachedImageView.layer.cornerRadius = 4
+        cachedImageView.layer.cornerRadius = .standardSpacing / 2
         cachedImageView.layer.masksToBounds = true
         return cachedImageView
     }()
 
     private lazy var posterInfoStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.spacing = 8
+        stackView.spacing = .standardSpacing
         stackView.axis = .vertical
         return stackView
     }()
@@ -183,6 +185,8 @@ class ShowViewController: UIViewController {
 
     private lazy var opaqueBottomViewHeightConstraint = opaqueBottomView.heightAnchor.constraint(equalToConstant: 0)
 
+    private lazy var transitionAnimator = ShowTransitionAnimator()
+
     private var headerHeight: CGFloat = 0 {
         didSet {
             let height = topLayoutGuide.length + headerHeight
@@ -207,6 +211,21 @@ class ShowViewController: UIViewController {
         return traitCollection.horizontalSizeClass == .regular
             ? Theme.current.statusBarStyle
             : .lightContent
+    }
+
+    init(coordinator: ShowCoordinator) {
+        self.coordinator = coordinator
+
+        super.init(nibName: nil, bundle: nil)
+
+        transitioningDelegate = transitionAnimator
+        modalPresentationStyle = .custom
+        modalPresentationCapturesStatusBarAppearance = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
@@ -244,7 +263,9 @@ class ShowViewController: UIViewController {
 
             backdropImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-            posterStackView.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -16),
+            posterStackView.bottomAnchor.constraint(equalTo: headerView.bottomAnchor,
+                                                    constant: -(.standardSpacing * 2)),
+
             posterStackView.heightAnchor.constraint(equalToConstant: posterHeight),
 
             posterImageView.heightAnchor.constraint(equalTo: posterImageView.widthAnchor, multiplier: 1.5),
@@ -269,19 +290,23 @@ class ShowViewController: UIViewController {
             NSLayoutConstraint.activate([
                 headerBarView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
                 headerBarView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-                posterStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 24),
+
+                posterStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+                                                         constant: .standardSpacing * 3),
 
                 posterStackView.trailingAnchor.constraint(
                     equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-                    constant: -24
+                    constant: -(.standardSpacing * 3)
                 ),
             ], priority: .highest)
         } else {
             NSLayoutConstraint.activate([
                 headerBarView.leftAnchor.constraint(equalTo: view.leftAnchor),
                 headerBarView.rightAnchor.constraint(equalTo: view.rightAnchor),
-                posterStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                posterStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+                posterStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: .standardSpacing * 3),
+
+                posterStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+                                                          constant: -(.standardSpacing * 3)),
             ])
         }
 
@@ -289,6 +314,8 @@ class ShowViewController: UIViewController {
         headerViewHeightConstraint.isActive = true
 
         startListenForThemeChange()
+
+        coordinator.didLoadView(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -296,9 +323,9 @@ class ShowViewController: UIViewController {
         setupHeaderHeight()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        delegate?.didDisappear(self)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        coordinator.viewDidAppear()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -337,12 +364,10 @@ class ShowViewController: UIViewController {
         shouldCollapseHeader = show?.posterURL == nil
 
         if fullTableReload {
-            UIView.transition(
-                with: tableView,
-                duration: animated ? 0.4 : 0,
-                options: .transitionCrossDissolve,
-                animations: { self.tableView.reloadData() }
-            )
+            UIView.transition(with: tableView,
+                              duration: animated ? 0.4 : 0,
+                              options: .transitionCrossDissolve,
+                              animations: { self.tableView.reloadData() })
         } else {
             tableView.visibleCells.forEach { cell in
                 guard let index = tableView.indexPath(for: cell)?.row else {
@@ -363,46 +388,12 @@ class ShowViewController: UIViewController {
 
         episodesCell?.reloadVisibleItems()
     }
-
-    private func fillRows() {
-        rows = []
-        rows.append(.info(show: model))
-
-        if model?.overview?.isEmpty == false {
-            rows.append(.overview(show: model))
-        }
-
-        if model?.episodes.isEmpty == false {
-            rows.append(.title("Episodes".localized(comment: "Episodes title label")))
-            rows.append(.progress(show: model))
-            rows.append(.episodes)
-
-            if model?.seasons.isEmpty == false {
-                rows.append(.title("Seasons".localized(comment: "Seasons title label")))
-                model?.seasons.forEach { rows.append(.season($0.value, show: model)) }
-            }
-        } else {
-            rows.append(.loading)
-        }
-    }
-
-    private func setupHeaderHeight() {
-        if shouldCollapseHeader || traitCollection.verticalSizeClass != .regular {
-            headerHeight = collapsedHeaderHeight
-            posterStackView.isHidden = true
-        } else {
-            headerHeight = expandedHeaderHeight
-            posterStackView.isHidden = false
-        }
-    }
-
-    @objc private func didTapCloseButton() {
-        presentingViewController?.dismiss(animated: true)
-    }
 }
 
-extension ShowViewController {
-    private enum Cell: CaseIterable {
+extension ShowViewController
+{
+    private enum Cell: CaseIterable
+    {
         case info(show: Show?)
         case progress(show: Show?)
         case overview(show: Show?)
@@ -451,7 +442,8 @@ extension ShowViewController {
     }
 }
 
-extension ShowViewController: ShadedAndRounded {
+extension ShowViewController: ShadedAndRounded
+{
     var viewWithShadow: UIView? {
         return view
     }
@@ -461,7 +453,8 @@ extension ShowViewController: ShadedAndRounded {
     }
 }
 
-extension ShowViewController: UITableViewDelegate {
+extension ShowViewController: UITableViewDelegate
+{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard !isBeingDismissed else {
             return
@@ -478,10 +471,13 @@ extension ShowViewController: UITableViewDelegate {
 
         let progress = (height - collapsedHeaderHeight - topLayoutGuide.length) /
             (expandedHeaderHeight - collapsedHeaderHeight)
+
         posterStackView.alpha = progress * 8
         collapsedNameLabel.alpha = (0.05 - progress) * 20
 
-        if scrollView.isDragging, height - headerHeight - topLayoutGuide.length > 125 {
+        let distanceToDismiss: CGFloat = traitCollection.verticalSizeClass == .compact ? 80 : 120
+
+        if scrollView.isDragging, height - headerHeight - topLayoutGuide.length > distanceToDismiss {
             presentingViewController?.dismiss(animated: true)
         }
     }
@@ -496,7 +492,8 @@ extension ShowViewController: UITableViewDelegate {
     }
 }
 
-extension ShowViewController: UITableViewDataSource {
+extension ShowViewController: UITableViewDataSource
+{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rows.count
     }
@@ -562,7 +559,8 @@ extension ShowViewController: UITableViewDataSource {
 
 extension ShowViewController: UIGestureRecognizerDelegate { }
 
-extension ShowViewController: InfoTableViewCellDelegate {
+extension ShowViewController: InfoTableViewCellDelegate
+{
     func didTapDeleteButton(in infoTableViewCell: InfoTableViewCell) {
         delegate?.didTapDeleteButton(in: self)
     }
@@ -572,7 +570,8 @@ extension ShowViewController: InfoTableViewCellDelegate {
     }
 }
 
-extension ShowViewController: ShowTransitionAnimatingSubviews {
+extension ShowViewController: ShowTransitionSubviewsAnimating
+{
     var animatedSubviews: [UIView] {
         get {
             guard traitCollection.verticalSizeClass == .regular else {
@@ -586,12 +585,54 @@ extension ShowViewController: ShowTransitionAnimatingSubviews {
     }
 }
 
-extension ShowViewController: ChangingTheme {
-    @objc func didChangeTheme() {
+extension ShowViewController: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         setNeedsStatusBarAppearanceUpdate()
 
         tableView.backgroundColor = Theme.current.primaryBackgroundColor
         opaqueBottomView.backgroundColor = Theme.current.primaryBackgroundColor
         tableView.indicatorStyle = Theme.current.scrollIndicatorStyle
+    }
+}
+
+extension ShowViewController
+{
+    private func fillRows() {
+        rows = []
+        rows.append(.info(show: model))
+
+        if model?.overview?.isEmpty == false {
+            rows.append(.overview(show: model))
+        }
+
+        if model?.episodes.isEmpty == false {
+            rows.append(.title("Episodes".localized(comment: "Episodes title label")))
+            rows.append(.progress(show: model))
+            rows.append(.episodes)
+
+            if model?.seasons.isEmpty == false {
+                rows.append(.title("Seasons".localized(comment: "Seasons title label")))
+                model?.seasons.forEach { rows.append(.season($0.value, show: model)) }
+            }
+        } else {
+            rows.append(.loading)
+        }
+    }
+
+    private func setupHeaderHeight() {
+        if shouldCollapseHeader || traitCollection.verticalSizeClass != .regular {
+            headerHeight = collapsedHeaderHeight
+            posterStackView.isHidden = true
+        } else {
+            headerHeight = expandedHeaderHeight
+            posterStackView.isHidden = false
+        }
+    }
+
+    @objc
+    private func didTapCloseButton() {
+        presentingViewController?.dismiss(animated: true)
     }
 }

@@ -6,12 +6,12 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import CoreData
 import Toolkit
 import Promises
 
-final class ShowStorage: Storage {
+final class ShowStorage: Storage
+{
     func getRunningShows() -> Promise<[Show]> {
         return Promise { completion in
             let request = self.runningShowsFetchRequest()
@@ -61,15 +61,12 @@ final class ShowStorage: Storage {
             NSSortDescriptor(keyPath: \ShowEntity.creationDate, ascending: false),
         ]
 
-        return NSFetchedResultsController<ShowEntity>(
-            fetchRequest: request,
-            managedObjectContext: coreData.viewContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
+        return NSFetchedResultsController<ShowEntity>(fetchRequest: request,
+                                                      managedObjectContext: coreData.viewContext,
+                                                      sectionNameKeyPath: nil,
+                                                      cacheName: nil)
     }
 
-    // TODO: refactor this hell
     @discardableResult
     func create(show: Show, overwriteCreationDate: Bool = true) -> Promise<Void> {
         return Promise { completion in
@@ -154,7 +151,6 @@ final class ShowStorage: Storage {
         }
     }
 
-    // TODO: refactor this hell
     @discardableResult
     func update(episode: Episode) -> Promise<Void> {
         return Promise { completion in
@@ -172,12 +168,14 @@ final class ShowStorage: Storage {
 
                         // consistency management
                         if let isViewed = episode.isViewed, isViewed != episodeEntity.isViewed {
+                            let delta: Int32 = isViewed ? 1 : -1
+
                             seasonEntity.numberOfViewedEpisodes =
-                                ((isViewed ? 1 : -1) + seasonEntity.numberOfViewedEpisodes)
+                                (delta + seasonEntity.numberOfViewedEpisodes)
                                 .clamped(to: 0...seasonEntity.numberOfEpisodes)
 
                             showEntity.numberOfViewedEpisodes =
-                                ((isViewed ? 1 : -1) + showEntity.numberOfViewedEpisodes)
+                                (delta + showEntity.numberOfViewedEpisodes)
                                 .clamped(to: 0...showEntity.numberOfEpisodes)
 
                             if isViewed && episode.isNew ?? false {
@@ -201,7 +199,10 @@ final class ShowStorage: Storage {
             }
         }
     }
+}
 
+extension ShowStorage
+{
     private func showFetchRequest(for id: Int) -> NSFetchRequest<ShowEntity> {
         let request: NSFetchRequest = ShowEntity.fetchRequest()
         request.fetchLimit = 1

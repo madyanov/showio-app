@@ -6,13 +6,13 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import CoreData
 import UIKit
 import Toolkit
 import Promises
 
-final class ShowsService {
+final class ShowsService
+{
     private let application: UIApplication
     private let storage: ShowStorage
     private let client: TheMovieDBClient
@@ -100,7 +100,6 @@ final class ShowsService {
         }
     }
 
-    // TODO: refactor this hell
     @discardableResult
     func view(episode: Ref<Episode>, of show: Show, viewed: Bool = true) -> Show {
         guard episode.value.canView, episode.value.isViewed != viewed else {
@@ -108,16 +107,18 @@ final class ShowsService {
         }
 
         episode.value.isViewed = viewed
-        var show = show
 
-        show.numberOfViewedEpisodes = ((viewed ? 1 : -1) + show.numberOfViewedEpisodes)
-            .clamped(to: 0...show.numberOfEpisodes)
+        var show = show
+        let delta = viewed ? 1 : -1
+
+        show.numberOfViewedEpisodes =
+            (delta + show.numberOfViewedEpisodes).clamped(to: 0...show.numberOfEpisodes)
 
         if let season = show.seasons.first(where: {
             $0.value.episodes.contains { $0 == episode }
         }) {
-            season.value.numberOfViewedEpisodes = ((viewed ? 1 : -1) + season.value.numberOfViewedEpisodes)
-                .clamped(to: 0...season.value.numberOfEpisodes)
+            season.value.numberOfViewedEpisodes =
+                (delta + season.value.numberOfViewedEpisodes).clamped(to: 0...season.value.numberOfEpisodes)
         }
 
         storage.update(episode: episode.value)
@@ -125,63 +126,17 @@ final class ShowsService {
         return show
     }
 
-    // TODO: refactor this hell
     func syncRunningShows() -> Promise<Int> {
         // get running shows from the local storage
         return storage.getRunningShows()
             .then { shows in
-                let dispatchGroup = DispatchGroup()
-                var totalNumberOfNewEpisodes = 0
-
-                for show in shows {
-                    dispatchGroup.enter()
-
-                    // fetch each show from the remote API
-                    self.client.show(id: show.id, mode: .withoutEpisodes)
-                        .then { remoteShow in
-                            // compare remote show and local show
-                            guard remoteShow.numberOfEpisodes > show.numberOfEpisodes else {
-                                dispatchGroup.leave()
-                                return
-                            }
-
-                            // if remote show has new episodes,
-                            // fetch them (starting from the last local season) and save to the local storage
-                            self.client
-                                .show(
-                                    id: show.id,
-                                    mode: .withEpisodesStartingFromSeason(show.seasons.last?.value.number ?? 1)
-                                )
-                                .then { remoteShow in
-                                    var remoteShow = remoteShow
-                                    var overwriteCreationDate = false
-
-                                    let numberOfNewEpisodes = remoteShow.numberOfEpisodes - show.numberOfEpisodes
-                                    totalNumberOfNewEpisodes += numberOfNewEpisodes
-
-                                    // if show is finished or already has new episodes, increment it's number of new episodes
-                                    if show.isFinished ?? false || show.numberOfNewEpisodes > 0 {
-                                        overwriteCreationDate = show.isFinished ?? false
-                                        remoteShow.numberOfNewEpisodes = show.numberOfNewEpisodes + numberOfNewEpisodes
-                                    }
-
-                                    self.storage.create(
-                                        show: remoteShow,
-                                        overwriteCreationDate: overwriteCreationDate
-                                    )
-                                }
-                                .finally { dispatchGroup.leave() }
-                        }
-                }
-
-                return Promise<Int> { completion in
-                    dispatchGroup.notify(queue: .main) {
-                        completion(.success(totalNumberOfNewEpisodes))
-                    }
-                }
+                self.fetchShowsWithNewEpisodes(shows)
             }
     }
+}
 
+extension ShowsService
+{
     private func add(id: Int) -> Promise<Void> {
         application.isNetworkActivityIndicatorVisible = true
 
@@ -189,7 +144,7 @@ final class ShowsService {
             .show(id: id, mode: .withEpisodesStartingFromSeason(1))
             .then { show in
                 guard let posterURL = show.posterURL else {
-                    return Promise(value: ())
+                    return .void
                 }
 
                 self.imageCache.load(from: posterURL, persistent: true)
@@ -201,5 +156,53 @@ final class ShowsService {
                 return self.storage.create(show: show)
             }
             .finally { self.application.isNetworkActivityIndicatorVisible = false }
+    }
+
+    private func fetchShowsWithNewEpisodes(_ shows: [Show]) -> Promise<Int> {
+        let dispatchGroup = DispatchGroup()
+        var totalNumberOfNewEpisodes = 0
+
+        for show in shows {
+            dispatchGroup.enter()
+
+            // fetch each show from the remote API
+            self.client.show(id: show.id, mode: .withoutEpisodes)
+                .then { remoteShow in
+                    // compare remote show and local show
+                    guard remoteShow.numberOfEpisodes > show.numberOfEpisodes else {
+                        dispatchGroup.leave()
+                        return
+                    }
+
+                    // if remote show has new episodes,
+                    // fetch them (starting from the last local season) and save to the local storage
+                    self.client
+                        .show(id: show.id,
+                              mode: .withEpisodesStartingFromSeason(show.seasons.last?.value.number ?? 1))
+                        .then { remoteShow in
+                            var remoteShow = remoteShow
+                            var overwriteCreationDate = false
+
+                            let numberOfNewEpisodes = remoteShow.numberOfEpisodes - show.numberOfEpisodes
+                            totalNumberOfNewEpisodes += numberOfNewEpisodes
+
+                            // if show is finished or already has new episodes, increment it's number of new episodes
+                            if show.isFinished ?? false || show.numberOfNewEpisodes > 0 {
+                                overwriteCreationDate = show.isFinished ?? false
+                                remoteShow.numberOfNewEpisodes = show.numberOfNewEpisodes + numberOfNewEpisodes
+                            }
+
+                            self.storage.create(show: remoteShow,
+                                                overwriteCreationDate: overwriteCreationDate)
+                        }
+                        .finally { dispatchGroup.leave() }
+                }
+        }
+
+        return Promise<Int> { completion in
+            dispatchGroup.notify(queue: .main) {
+                completion(.success(totalNumberOfNewEpisodes))
+            }
+        }
     }
 }

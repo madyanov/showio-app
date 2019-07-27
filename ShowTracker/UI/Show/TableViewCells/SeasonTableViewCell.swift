@@ -6,10 +6,10 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-class SeasonTableViewCell: UITableViewCell {
+final class SeasonTableViewCell: UITableViewCell
+{
     private lazy var progressView: ProgressView = {
         let progressView = ProgressView()
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -19,7 +19,7 @@ class SeasonTableViewCell: UITableViewCell {
     override init(style: CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(progressView)
-        progressView.snap(insets: UIEdgeInsets(dx: 24, dy: 16))
+        progressView.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
     }
 
     func setModel(_ season: Season?, show: Show?, animated: Bool = false) {

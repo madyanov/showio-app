@@ -6,36 +6,31 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
-import Foundation
 import UIKit
-import GoogleMobileAds
 
-protocol ShowsViewControllerDelegate: AnyObject {
+protocol ShowsViewControllerDelegate: AnyObject
+{
     func didTapAddButton(in showsViewController: ShowsViewController)
     func didTapFeedbackButton(in showsViewController: ShowsViewController)
     func didTapPrivacyPolicyButton(in showsViewController: ShowsViewController)
     func didTapSwitchThemeButton(in showsViewController: ShowsViewController)
 }
 
-class ShowsViewController: UIViewController, ShowTransitionAnimatingSubviews {
+final class ShowsViewController: UIViewController, ShowTransitionSubviewsAnimating
+{
     weak var delegate: ShowsViewControllerDelegate?
-    weak var showsCollectionViewDelegate: ShowsCollectionViewDelegate?
-    weak var showsCollectionViewDataSource: ShowsCollectionViewDataSource?
 
-    var animatedSubviews: [UIView] = []
-    var shouldShowBottomBanner = true
-
-    var bottomBannerAdMobUnitID: String? {
-        didSet { bannerView.adUnitID = bottomBannerAdMobUnitID }
+    weak var showsCollectionViewDelegate: ShowsCollectionViewDelegate? {
+        didSet { showsCollectionView.delegate = showsCollectionViewDelegate }
     }
 
-    var adMobTestDevices: [String] = []
+    weak var showsCollectionViewDataSource: ShowsCollectionViewDataSource? {
+        didSet { showsCollectionView.dataSource = showsCollectionViewDataSource }
+    }
 
-    private lazy var adMobRequest: GADRequest = {
-        let request = GADRequest()
-        request.testDevices = [kGADSimulatorID] + adMobTestDevices
-        return request
-    }()
+    var animatedSubviews: [UIView] = []
+
+    private let coordinator: ShowsCoordinator
 
     private lazy var blurredHeaderView: UIVisualEffectView = {
         let visualEffectView = UIVisualEffectView()
@@ -61,47 +56,38 @@ class ShowsViewController: UIViewController, ShowTransitionAnimatingSubviews {
         return imageView
     }()
 
-    private lazy var bannerView: GADBannerView = {
-        let bannerView = GADBannerView()
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        bannerView.rootViewController = self
-        bannerView.delegate = self
-        bannerView.isHidden = true
-        return bannerView
-    }()
-
-    private lazy var showsCollectionViewBottomToBannerConstraint =
-        showsCollectionView.bottomAnchor.constraint(equalTo: bannerView.topAnchor)
-
-    private lazy var showsCollectionViewBottomToViewContstraint =
-        showsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return Theme.current.statusBarStyle
+    }
+
+    init(coordinator: ShowsCoordinator) {
+        self.coordinator = coordinator
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "plus-20"),
-            style: .plain,
-            target: self,
-            action: #selector(didTapAddButton)
-        )
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "plus-20"),
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(didTapAddButton))
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "ellipsis-20"),
-            style: .plain,
-            target: self,
-            action: #selector(didTapDotsButton)
-        )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "ellipsis-20"),
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(didTapDotsButton))
 
         navigationItem.titleView = logoImageView
 
         view.addSubview(showsCollectionView)
         view.addSubview(blurredHeaderView)
-        view.addSubview(bannerView)
 
         NSLayoutConstraint.activate([
             blurredHeaderView.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -109,11 +95,8 @@ class ShowsViewController: UIViewController, ShowTransitionAnimatingSubviews {
             blurredHeaderView.topAnchor.constraint(equalTo: view.topAnchor),
             blurredHeaderView.heightAnchor.constraint(equalTo: topLayoutGuide.heightAnchor),
 
-            bannerView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
-            bannerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
             showsCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            showsCollectionViewBottomToViewContstraint,
+            showsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         if #available(iOS 11.0, *) {
@@ -128,21 +111,9 @@ class ShowsViewController: UIViewController, ShowTransitionAnimatingSubviews {
             ])
         }
 
-        if shouldShowBottomBanner {
-            bannerView.load(adMobRequest)
-        }
-
         startListenForThemeChange()
-    }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        updateBannerAdSize()
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        updateBannerAdSize()
+        coordinator.didLoadView(self)
     }
 
     func performBatchUpdates(_ updates: () -> Void) {
@@ -160,99 +131,56 @@ class ShowsViewController: UIViewController, ShowTransitionAnimatingSubviews {
     func updateShow(at index: Int, show: Show) {
         showsCollectionView.cellForItem(at: IndexPath(item: index, section: 0))?.model = show
     }
-
-    private func updateBannerAdSize() {
-        if UIDevice.current.orientation.isLandscape {
-            bannerView.adSize = kGADAdSizeSmartBannerLandscape
-        } else {
-            bannerView.adSize = kGADAdSizeSmartBannerPortrait
-        }
-    }
-
-    private func showBanner() {
-        bannerView.alpha = 0
-        bannerView.isHidden = false
-        showsCollectionViewBottomToViewContstraint.isActive = false
-        showsCollectionViewBottomToBannerConstraint.isActive = true
-
-        UIView.animate(withDuration: 0.3) {
-            self.bannerView.alpha = 1
-        }
-    }
-
-    private func hideBanner() {
-        bannerView.alpha = 1
-        showsCollectionViewBottomToBannerConstraint.isActive = false
-        showsCollectionViewBottomToViewContstraint.isActive = true
-
-        UIView.animate(withDuration: 0.3, animations: {
-            self.bannerView.alpha = 0
-        }, completion: { _ in
-            self.bannerView.isHidden = true
-        })
-    }
-
-    @objc private func didTapAddButton() {
-        delegate?.didTapAddButton(in: self)
-    }
-
-    @objc private func didTapDotsButton(_ button: UIBarButtonItem) {
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        alertController.popoverPresentationController?.barButtonItem = button
-
-        alertController.addAction(UIAlertAction(
-            title: "Switch Theme".localized(comment: "Switch Theme button"),
-            style: .default,
-            handler: { _ in
-                self.delegate?.didTapSwitchThemeButton(in: self)
-            }
-        ))
-
-        alertController.addAction(UIAlertAction(
-            title: "Feedback".localized(comment: "Feedback button"),
-            style: .default,
-            handler: { _ in
-                self.delegate?.didTapFeedbackButton(in: self)
-            }
-        ))
-
-        alertController.addAction(UIAlertAction(
-            title: "Privacy Policy".localized(comment: "Privacy Policy button"),
-            style: .default,
-            handler: { _ in
-                self.delegate?.didTapPrivacyPolicyButton(in: self)
-            }
-        ))
-
-        alertController.addAction(UIAlertAction(
-            title: "Cancel".localized(comment: "Cancel button"),
-            style: .cancel
-        ))
-
-        present(alertController, animated: true)
-    }
 }
 
-extension ShowsViewController: GADBannerViewDelegate {
-    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        showBanner()
-    }
-
-    func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        hideBanner()
-        print("!!! AdMob: \(error.localizedDescription)")
-    }
-}
-
-extension ShowsViewController: ChangingTheme {
-    @objc func didChangeTheme() {
+extension ShowsViewController: ThemeChanging
+{
+    @objc
+    func didChangeTheme() {
         UIView.animate(withDuration: 0.3) {
             self.setNeedsStatusBarAppearanceUpdate()
 
             self.view.backgroundColor = Theme.current.primaryBackgroundColor
             self.logoImageView.tintColor = Theme.current.tintColor
-            self.navigationItem.leftBarButtonItem?.tintColor = Theme.current.tintColor.withAlphaComponent(0.33)
+            self.navigationItem.leftBarButtonItem?.tintColor = Theme.current.tintColor.withAlphaComponent(0.5)
             self.blurredHeaderView.effect = UIBlurEffect(style: Theme.current.blurStyle)
         }
+    }
+}
+
+extension ShowsViewController
+{
+    @objc
+    private func didTapAddButton() {
+        delegate?.didTapAddButton(in: self)
+    }
+
+    @objc
+    private func didTapDotsButton(_ button: UIBarButtonItem) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.popoverPresentationController?.barButtonItem = button
+
+        alertController.addAction(UIAlertAction(title: "Switch Theme".localized(comment: "Switch Theme button"),
+                                                style: .default,
+                                                handler: { _ in
+                                                    self.delegate?.didTapSwitchThemeButton(in: self)
+                                                }))
+
+        alertController.addAction(UIAlertAction(title: "Feedback".localized(comment: "Feedback button"),
+                                                style: .default,
+                                                handler: { _ in
+                                                    self.delegate?.didTapFeedbackButton(in: self)
+                                                }))
+
+        alertController.addAction(UIAlertAction(title: "Privacy Policy".localized(comment: "Privacy Policy button"),
+                                                style: .default,
+                                                handler: { _ in
+                                                    self.delegate?.didTapPrivacyPolicyButton(in: self)
+                                                }))
+
+        alertController.addAction(UIAlertAction(title: "Cancel".localized(comment: "Cancel button"),
+                                                style: .cancel))
+
+        present(alertController, animated: true)
     }
 }

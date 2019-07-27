@@ -17,7 +17,7 @@
 ## Requirements
 
 - iOS 10+
-- Swift 4.2
+- Swift 5
 - CocoaPods
 - [TMDB API](https://www.themoviedb.org/documentation/api) Key
 
