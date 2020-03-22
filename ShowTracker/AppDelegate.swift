@@ -22,6 +22,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 
         let showsViewController = ShowsCoordinator.makeViewController(with: services)
 
+        updateTheme(for: showsViewController)
+
         let navigationController = UINavigationController()
         navigationController.navigationBar.makeTransparent()
         navigationController.viewControllers = [showsViewController]
@@ -50,11 +52,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 extension AppDelegate
 {
     private func start() {
-        Theme.current = Theme(rawValue: UserDefaults.standard[.currentTheme] ?? "") ?? .light
-
         UserDefaults.standard[.lastLaunchDate] = Date()
 
         syncShows()
+    }
+
+    private func updateTheme(for viewController: UIViewController) {
+        let defaultTheme: Theme
+
+        if #available(iOS 12.0, *) {
+            defaultTheme = viewController.traitCollection.userInterfaceStyle == .dark
+                ? .dark
+                : .light
+        } else {
+            defaultTheme = .light
+        }
+
+        Theme.current = Theme(rawValue: UserDefaults.standard[.currentTheme] ?? "") ?? defaultTheme
     }
 
     private func syncShows(_ completion: ((UIBackgroundFetchResult) -> Void)? = nil) {

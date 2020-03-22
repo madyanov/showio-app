@@ -47,6 +47,7 @@
 		30C33A1021974F8B00108486 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C33A0F21974F8B00108486 /* ProgressView.swift */; };
 		30C33A12219790B700108486 /* TitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C33A11219790B700108486 /* TitleTableViewCell.swift */; };
 		30C3DE37219CC0A60049FF05 /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C3DE36219CC0A60049FF05 /* InfoTableViewCell.swift */; };
+		30D04A612427A5BD00ED1A1E /* ViewButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D04A602427A5BD00ED1A1E /* ViewButton.swift */; };
 		30EC550D219ED0B80090AFDD /* EpisodeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EC550C219ED0B80090AFDD /* EpisodeCollectionViewCell.swift */; };
 		30EC550F219ED1440090AFDD /* EpisodesCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EC550E219ED1440090AFDD /* EpisodesCollectionView.swift */; };
 		30EC5511219ED34C0090AFDD /* EpisodesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EC5510219ED34C0090AFDD /* EpisodesTableViewCell.swift */; };
@@ -128,6 +129,7 @@
 		30C33A0F21974F8B00108486 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		30C33A11219790B700108486 /* TitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleTableViewCell.swift; sourceTree = "<group>"; };
 		30C3DE36219CC0A60049FF05 /* InfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
+		30D04A602427A5BD00ED1A1E /* ViewButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewButton.swift; sourceTree = "<group>"; };
 		30EC550C219ED0B80090AFDD /* EpisodeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeCollectionViewCell.swift; sourceTree = "<group>"; };
 		30EC550E219ED1440090AFDD /* EpisodesCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesCollectionView.swift; sourceTree = "<group>"; };
 		30EC5510219ED34C0090AFDD /* EpisodesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesTableViewCell.swift; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				30C33A0F21974F8B00108486 /* ProgressView.swift */,
 				307ED6B42199A74C005A6887 /* TagsView.swift */,
 				30767AAB21A035DA00BE1D3A /* CollapsedText.swift */,
+				30D04A602427A5BD00ED1A1E /* ViewButton.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -589,6 +592,7 @@
 				30C33A0E21909AF400108486 /* ShowsService.swift in Sources */,
 				30256C602161238C00646118 /* ShowsCollectionViewLayout.swift in Sources */,
 				30C3DE37219CC0A60049FF05 /* InfoTableViewCell.swift in Sources */,
+				30D04A612427A5BD00ED1A1E /* ViewButton.swift in Sources */,
 				30234C022168F4BE0003CF03 /* ProgressTableViewCell.swift in Sources */,
 				30256C572160CB2400646118 /* ShowViewController.swift in Sources */,
 				30256C592160D3CF00646118 /* ShowCoordinator.swift in Sources */,
@@ -796,13 +800,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 20200320;
+				DEVELOPMENT_TEAM = 2TUHEN5M7U;
 				INFOPLIST_FILE = ShowTracker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.madyanov.ShowTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/$(SWIFT_MODULE_NAME)-Bridging-Header.h";
@@ -817,13 +823,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 20200320;
+				DEVELOPMENT_TEAM = 2TUHEN5M7U;
 				INFOPLIST_FILE = ShowTracker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.madyanov.ShowTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/$(SWIFT_MODULE_NAME)-Bridging-Header.h";

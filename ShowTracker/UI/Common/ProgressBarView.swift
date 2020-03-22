@@ -11,7 +11,7 @@ import Toolkit
 
 final class ProgressBarView: UIView
 {
-    var progress: CGFloat = 0 {
+    var progress: Float = 0 {
         didSet { setNeedsLayout() }
     }
 
@@ -69,10 +69,10 @@ final class ProgressBarView: UIView
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        filledViewWidthConstraint.constant = bounds.width * progress
+        filledViewWidthConstraint.constant = bounds.width * CGFloat(progress)
     }
 
-    func setProgress(_ progress: CGFloat, animated: Bool = false) {
+    func setProgress(_ progress: Float, animated: Bool = false) {
         self.progress = progress
 
         guard animated else {
