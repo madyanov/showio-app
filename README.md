@@ -29,6 +29,7 @@
     $ git clone git@github.com:madyanov/showio-app.git
     $ cd showio-app
     $ pod install
+    $ brew install swiftlint
       ...
     ```
 
