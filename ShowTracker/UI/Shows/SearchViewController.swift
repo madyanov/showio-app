@@ -247,16 +247,27 @@ extension SearchViewController: ThemeChanging
 {
     @objc
     func didChangeTheme() {
-        setNeedsStatusBarAppearanceUpdate()
+        UIView.animate(withDuration: 0.3) {
+            self.setNeedsStatusBarAppearanceUpdate()
 
-        view.backgroundColor = Theme.current.primaryBackgroundColor
-        searchController.searchBar.tintColor = Theme.current.tintColor
-        poweredByLabel.textColor = Theme.current.secondaryForegroundColor
-        activityIndicatorView.style = Theme.current.activityIndicatorStyle
-        searchController.searchBar.keyboardAppearance = Theme.current.keyboardAppearance
+            self.view.backgroundColor = Theme.current.primaryBackgroundColor
+            self.searchController.searchBar.tintColor = Theme.current.tintColor
+            self.poweredByLabel.textColor = Theme.current.secondaryForegroundColor
+            self.activityIndicatorView.style = Theme.current.activityIndicatorStyle
+            self.searchController.searchBar.keyboardAppearance = Theme.current.keyboardAppearance
 
-        blurEffect = UIBlurEffect(style: Theme.current.blurStyle)
-        blurredHeaderView.effect = blurEffect
+            self.blurEffect = UIBlurEffect(style: Theme.current.blurStyle)
+            self.blurredHeaderView.effect = self.blurEffect
+        }
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if #available(iOS 13.0, *) {
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)  {
+                Theme.current = traitCollection.userInterfaceStyle == .light ? .light : .dark
+            }
+        }
     }
 }
 
