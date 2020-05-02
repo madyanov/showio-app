@@ -24,9 +24,9 @@ struct Season: Model, Identifiable
     var numberOfViewedEpisodes: Int
     var episodes: [Ref<Episode>] = []
 
-    var progress: CGFloat {
+    var progress: Float {
         return numberOfEpisodes > 0
-            ? CGFloat(numberOfViewedEpisodes) / CGFloat(numberOfEpisodes)
+            ? Float(numberOfViewedEpisodes) / Float(numberOfEpisodes)
             : 0
     }
 

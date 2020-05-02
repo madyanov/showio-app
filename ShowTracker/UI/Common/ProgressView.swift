@@ -42,7 +42,7 @@ final class ProgressView: UIView
         set { trailingLabel.text = newValue }
     }
 
-    var progress: CGFloat {
+    var progress: Float {
         get { return progressBarView.progress }
         set { progressBarView.progress = newValue }
     }
@@ -96,7 +96,7 @@ final class ProgressView: UIView
         startListenForThemeChange()
     }
 
-    func setProgress(_ progress: CGFloat, animated: Bool = false) {
+    func setProgress(_ progress: Float, animated: Bool = false) {
         progressBarView.setProgress(progress, animated: animated)
     }
 }

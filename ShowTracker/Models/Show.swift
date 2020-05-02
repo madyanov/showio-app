@@ -66,9 +66,9 @@ struct Show: Model, Identifiable
         return episodes.lastIndex { $0.value.isViewed ?? false }
     }
 
-    var progress: CGFloat {
+    var progress: Float {
         return numberOfEpisodes > 0
-            ? CGFloat(numberOfViewedEpisodes) / CGFloat(numberOfEpisodes)
+            ? Float(numberOfViewedEpisodes) / Float(numberOfEpisodes)
             : 0
     }
 
