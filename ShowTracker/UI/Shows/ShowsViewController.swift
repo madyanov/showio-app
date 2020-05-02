@@ -149,6 +149,7 @@ extension ShowsViewController: ThemeChanging
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+
         if #available(iOS 13.0, *) {
             if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)  {
                 Theme.current = traitCollection.userInterfaceStyle == .light ? .light : .dark
@@ -170,11 +171,11 @@ extension ShowsViewController
         alertController.popoverPresentationController?.barButtonItem = button
 
         if #available(iOS 13.0, *) {} else {
-        alertController.addAction(UIAlertAction(title: "Switch Theme".localized(comment: "Switch Theme button"),
-                                                style: .default,
-                                                handler: { _ in
-                                                    self.delegate?.didTapSwitchThemeButton(in: self)
-                                                }))
+            alertController.addAction(UIAlertAction(title: "Switch Theme".localized(comment: "Switch Theme button"),
+                                                    style: .default,
+                                                    handler: { _ in
+                                                        self.delegate?.didTapSwitchThemeButton(in: self)
+                                                    }))
         }
 
         alertController.addAction(UIAlertAction(title: "Feedback".localized(comment: "Feedback button"),

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,7 @@
 		307ED6B121989594005A6887 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307ED6B021989594005A6887 /* Themes.swift */; };
 		307ED6B3219993BC005A6887 /* unused.rb in Resources */ = {isa = PBXBuildFile; fileRef = 307ED6B2219993BC005A6887 /* unused.rb */; };
 		307ED6B52199A74C005A6887 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307ED6B42199A74C005A6887 /* TagsView.swift */; };
+		3085FA6D245D434A005971E3 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 3085FA6C245D434A005971E3 /* Promises */; };
 		30935DB62184886A007D268F /* ShowTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30935DB52184886A007D268F /* ShowTransitionAnimator.swift */; };
 		309D4FDE21576229005B8334 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D4FDD21576229005B8334 /* AppDelegate.swift */; };
 		309D4FE62157622A005B8334 /* ShowTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 309D4FE42157622A005B8334 /* ShowTracker.xcdatamodeld */; };
@@ -146,6 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3085FA6D245D434A005971E3 /* Promises in Frameworks */,
 				3E68DDDDA351270E3AD5465F /* libPods-ShowTracker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -394,6 +396,9 @@
 			dependencies = (
 			);
 			name = ShowTracker;
+			packageProductDependencies = (
+				3085FA6C245D434A005971E3 /* Promises */,
+			);
 			productName = ShowTracker;
 			productReference = 309D4FDA21576229005B8334 /* ShowTracker.app */;
 			productType = "com.apple.product-type.application";
@@ -472,6 +477,9 @@
 				ru,
 			);
 			mainGroup = 309D4FD121576229005B8334;
+			packageReferences = (
+				3085FA6B245D434A005971E3 /* XCRemoteSwiftPackageReference "Promises" */,
+			);
 			productRefGroup = 309D4FDB21576229005B8334 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -954,6 +962,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3085FA6B245D434A005971E3 /* XCRemoteSwiftPackageReference "Promises" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/madyanov/Promises";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3085FA6C245D434A005971E3 /* Promises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3085FA6B245D434A005971E3 /* XCRemoteSwiftPackageReference "Promises" */;
+			productName = Promises;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		309D4FE42157622A005B8334 /* ShowTracker.xcdatamodeld */ = {
