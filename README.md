@@ -45,7 +45,14 @@
 - Core Data is used for local storage
 - Async API provided by the [Promises Toolkit](https://github.com/madyanov/Promises)
 
+## Further refactoring
+
+- Data and domain layers should be refactored
+- Separate UI, domain and storage models
+- Split `ShowsService` and `ShowStorage`
+- ...
+
 ## Links
 
 - [AppStore](https://itunes.apple.com/app/id1445035408)
-- [Site](https://madyanov.com/showio/)
+- [Site](https://madyanov.github.io/showio/)
