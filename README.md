@@ -19,6 +19,7 @@
 - iOS 10+
 - Swift 5
 - CocoaPods
+- SwiftLint
 - [TMDB API](https://www.themoviedb.org/documentation/api) Key
 
 ## Installation
@@ -35,7 +36,7 @@
 
 2. Open `ShowTracker.xcworkspace` in the Xcode
 
-3. Put your *TMDB API Key* to the `Config.plist` file
+3. Put your *TMDB API Key (v3 auth)* to the `Config.plist` file
 
 ## Overview
 
