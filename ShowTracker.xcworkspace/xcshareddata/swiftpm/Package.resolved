@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Promises",
+        "repositoryURL": "https://github.com/madyanov/Promises",
+        "state": {
+          "branch": null,
+          "revision": "44e6c85de7d158cafde8ca5de90f653abbd3448d",
+          "version": "1.0.4"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
