@@ -390,7 +390,6 @@ final class ShowViewController: UIViewController
         }
 
         episodesCell?.reloadVisibleItems()
-        episodesCell?.reloadData()
     }
 }
 

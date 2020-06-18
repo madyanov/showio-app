@@ -76,10 +76,6 @@ final class EpisodesTableViewCell: UITableViewCell
     func reloadVisibleItems() {
         episodesCollectionView.reloadVisibleItems()
     }
-
-    func reloadData() {
-        episodesCollectionView.reloadData()
-    }
 }
 
 extension EpisodesTableViewCell: ThemeChanging
