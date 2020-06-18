@@ -152,7 +152,7 @@ extension ShowCoordinator: EpisodesCollectionViewDelegate
 
     func initialPageIndex(in episodesCollectionView: EpisodesCollectionView) -> Int? {
         guard let lastViewedEpisodeIndex = model?.lastViewedEpisodeIndex else {
-            return nil
+            return 0
         }
 
         return lastViewedEpisodeIndex + 1
