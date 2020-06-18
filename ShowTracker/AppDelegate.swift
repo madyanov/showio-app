@@ -33,6 +33,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
 
+        setTheme()
+
         application.setMinimumBackgroundFetchInterval(60 * 60 * 3)
 
         return true
@@ -78,5 +80,13 @@ extension AppDelegate
             .then { self.services.shows.syncRunningShows() }
             .then { completion?($0 > 0 ? .newData : .noData) }
             .catch { _ in completion?(.noData) }
+    }
+
+    private func setTheme() {
+        if #available(iOS 13.0, *) {
+            Theme.current = window?.traitCollection.userInterfaceStyle == .light ? .light : .dark
+        } else {
+            Theme.current = Theme(rawValue: UserDefaults.standard[.currentTheme] ?? "") ?? .light
+        }
     }
 }

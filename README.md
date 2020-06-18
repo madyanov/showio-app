@@ -22,22 +22,22 @@
 
 ## Installation
 
-1. Clone this repository and install dependencies:
+1. Clone this repository:
 
     ```bash
     $ git clone git@github.com:madyanov/showio-app.git
-    $ cd showio-app
     ```
 
 2. Rename `Config.plist.tmp` file:
 
     ```bash
+    $ cd showio-app
     $ mv ShowTracker/Config.plist.tmp ShowTracker/Config.plist
     ```
 
 3. Open `ShowTracker.xcworkspace` in the Xcode.
 
-4. Put your *TMDB API Key* to the `Config.plist` file.
+4. Put your *TMDB API Key (v3 auth)* to the `Config.plist` file.
 
 ## Overview
 

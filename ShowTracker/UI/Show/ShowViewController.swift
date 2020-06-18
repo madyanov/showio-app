@@ -613,11 +613,13 @@ extension ShowViewController: ThemeChanging
 {
     @objc
     func didChangeTheme() {
-        setNeedsStatusBarAppearanceUpdate()
+        UIView.animate(withDuration: 0.3) {
+            self.setNeedsStatusBarAppearanceUpdate()
 
-        tableView.backgroundColor = Theme.current.primaryBackgroundColor
-        opaqueBottomView.backgroundColor = Theme.current.primaryBackgroundColor
-        tableView.indicatorStyle = Theme.current.scrollIndicatorStyle
+            self.tableView.backgroundColor = Theme.current.primaryBackgroundColor
+            self.opaqueBottomView.backgroundColor = Theme.current.primaryBackgroundColor
+            self.tableView.indicatorStyle = Theme.current.scrollIndicatorStyle
+        }
     }
 }
 
