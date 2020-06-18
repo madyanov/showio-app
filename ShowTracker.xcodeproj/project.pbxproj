@@ -12,7 +12,6 @@
 		30234C022168F4BE0003CF03 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30234C012168F4BE0003CF03 /* ProgressTableViewCell.swift */; };
 		30234C0C216961710003CF03 /* SeasonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30234C0B216961710003CF03 /* SeasonTableViewCell.swift */; };
 		30256C49215FAD2100646118 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30256C48215FAD2100646118 /* Season.swift */; };
-		30256C51215FD5E800646118 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 30256C50215FD5E800646118 /* .swiftlint.yml */; };
 		30256C532160B5F400646118 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30256C522160B5F400646118 /* ProgressBarView.swift */; };
 		30256C572160CB2400646118 /* ShowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30256C562160CB2400646118 /* ShowViewController.swift */; };
 		30256C592160D3CF00646118 /* ShowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30256C582160D3CF00646118 /* ShowCoordinator.swift */; };
@@ -24,7 +23,6 @@
 		306C80DD21A8131C00170DCA /* EndingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306C80DC21A8131C00170DCA /* EndingCollectionViewCell.swift */; };
 		30767AAC21A035DA00BE1D3A /* CollapsedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30767AAB21A035DA00BE1D3A /* CollapsedText.swift */; };
 		307ED6B121989594005A6887 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307ED6B021989594005A6887 /* Themes.swift */; };
-		307ED6B3219993BC005A6887 /* unused.rb in Resources */ = {isa = PBXBuildFile; fileRef = 307ED6B2219993BC005A6887 /* unused.rb */; };
 		307ED6B52199A74C005A6887 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307ED6B42199A74C005A6887 /* TagsView.swift */; };
 		30935DB62184886A007D268F /* ShowTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30935DB52184886A007D268F /* ShowTransitionAnimator.swift */; };
 		309D4FDE21576229005B8334 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D4FDD21576229005B8334 /* AppDelegate.swift */; };
@@ -37,7 +35,6 @@
 		309D501C21576B4D005B8334 /* TheMovieDBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D501B21576B4D005B8334 /* TheMovieDBClient.swift */; };
 		309D502421578E6B005B8334 /* ShowStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D502321578E6B005B8334 /* ShowStorage.swift */; };
 		309D50332157C086005B8334 /* Show.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D50322157C086005B8334 /* Show.swift */; };
-		309D50352157C3BB005B8334 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 309D50342157C3BB005B8334 /* .gitignore */; };
 		309D50392157DDD9005B8334 /* ShowsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309D50382157DDD9005B8334 /* ShowsCollectionView.swift */; };
 		30AB37EE21ADD2A20001FDC9 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30AB37ED21ADD2A20001FDC9 /* Config.plist */; };
 		30AB37F221ADD88E0001FDC9 /* PropertyListKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AB37F121ADD88E0001FDC9 /* PropertyListKeys.swift */; };
@@ -77,6 +74,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3011FF90249B941B00CF77F7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		30234C012168F4BE0003CF03 /* ProgressTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTableViewCell.swift; sourceTree = "<group>"; };
 		30234C0B216961710003CF03 /* SeasonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonTableViewCell.swift; sourceTree = "<group>"; };
 		30256C48215FAD2100646118 /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
@@ -212,6 +210,7 @@
 		309D4FD121576229005B8334 = {
 			isa = PBXGroup;
 			children = (
+				3011FF90249B941B00CF77F7 /* README.md */,
 				309D50342157C3BB005B8334 /* .gitignore */,
 				30256C50215FD5E800646118 /* .swiftlint.yml */,
 				30A80C802172002400DD1ED4 /* genstrings.rb */,
@@ -475,13 +474,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30256C51215FD5E800646118 /* .swiftlint.yml in Resources */,
 				30B841A521AEED9C003BD11A /* Localizable.stringsdict in Resources */,
 				309D4FEB2157622A005B8334 /* LaunchScreen.storyboard in Resources */,
-				309D50352157C3BB005B8334 /* .gitignore in Resources */,
 				309D4FE82157622A005B8334 /* Assets.xcassets in Resources */,
 				30B8419F21AEE24A003BD11A /* Localizable.strings in Resources */,
-				307ED6B3219993BC005A6887 /* unused.rb in Resources */,
 				30AB37EE21ADD2A20001FDC9 /* Config.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

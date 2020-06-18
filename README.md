@@ -26,11 +26,18 @@
 
     ```bash
     $ git clone git@github.com:madyanov/showio-app.git
+    $ cd showio-app
     ```
 
-2. Open `ShowTracker.xcworkspace` in the Xcode
+2. Rename `Config.plist.tmp` file:
 
-3. Put your *TMDB API Key* to the `Config.plist` file
+    ```bash
+    $ mv ShowTracker/Config.plist.tmp ShowTracker/Config.plist
+    ```
+
+3. Open `ShowTracker.xcworkspace` in the Xcode.
+
+4. Put your *TMDB API Key* to the `Config.plist` file.
 
 ## Overview
 
