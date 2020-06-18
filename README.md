@@ -13,6 +13,7 @@
 - Pretty animations
 - Works without internet
 - Supports iPhone and iPad in all orientations
+- Sync via iCloud (on iOS 13+ using `NSPersistentCloudKitContainer`)
 
 ## Requirements
 
