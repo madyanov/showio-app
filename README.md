@@ -26,7 +26,7 @@
     ```bash
     $ git clone git@github.com:madyanov/showio-app.git
     ```
-2. Rename `Config.plist.tmp` file:
+2. Rename `Config.plist.tmp` file to `Config.plist`:
     ```bash
     $ cd showio-app
     $ mv ShowTracker/Config.plist.tmp ShowTracker/Config.plist
