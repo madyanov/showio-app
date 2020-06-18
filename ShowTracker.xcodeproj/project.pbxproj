@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3011FF8C249B8EAF00CF77F7 /* Toolkit in Frameworks */ = {isa = PBXBuildFile; productRef = 3011FF8B249B8EAF00CF77F7 /* Toolkit */; };
 		3011FF8F249B8ECC00CF77F7 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 3011FF8E249B8ECC00CF77F7 /* Promises */; };
+		3011FF94249BA12100CF77F7 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3011FF93249BA12100CF77F7 /* CloudKit.framework */; };
 		30234C022168F4BE0003CF03 /* ProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30234C012168F4BE0003CF03 /* ProgressTableViewCell.swift */; };
 		30234C0C216961710003CF03 /* SeasonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30234C0B216961710003CF03 /* SeasonTableViewCell.swift */; };
 		30256C49215FAD2100646118 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30256C48215FAD2100646118 /* Season.swift */; };
@@ -75,6 +76,8 @@
 
 /* Begin PBXFileReference section */
 		3011FF90249B941B00CF77F7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3011FF91249BA0B400CF77F7 /* ShowTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShowTracker.entitlements; sourceTree = "<group>"; };
+		3011FF93249BA12100CF77F7 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		30234C012168F4BE0003CF03 /* ProgressTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTableViewCell.swift; sourceTree = "<group>"; };
 		30234C0B216961710003CF03 /* SeasonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonTableViewCell.swift; sourceTree = "<group>"; };
 		30256C48215FAD2100646118 /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3011FF94249BA12100CF77F7 /* CloudKit.framework in Frameworks */,
 				3011FF8F249B8ECC00CF77F7 /* Promises in Frameworks */,
 				3011FF8C249B8EAF00CF77F7 /* Toolkit in Frameworks */,
 			);
@@ -164,6 +168,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3011FF92249BA12100CF77F7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3011FF93249BA12100CF77F7 /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		30256C45215FACEA00646118 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +231,7 @@
 				309D4FF42157622A005B8334 /* ShowTrackerTests */,
 				309D4FFF2157622A005B8334 /* ShowTrackerUITests */,
 				309D4FDB21576229005B8334 /* Products */,
+				3011FF92249BA12100CF77F7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -235,6 +248,7 @@
 		309D4FDC21576229005B8334 /* ShowTracker */ = {
 			isa = PBXGroup;
 			children = (
+				3011FF91249BA0B400CF77F7 /* ShowTracker.entitlements */,
 				309D501921576A5F005B8334 /* UI */,
 				309D501621576A29005B8334 /* Coordinators */,
 				30C33A0C21909ACD00108486 /* Services */,
@@ -755,6 +769,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ShowTracker/ShowTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 20200320;
 				DEVELOPMENT_TEAM = 2TUHEN5M7U;
@@ -777,6 +792,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ShowTracker/ShowTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 20200320;
 				DEVELOPMENT_TEAM = 2TUHEN5M7U;

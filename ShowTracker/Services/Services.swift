@@ -36,5 +36,8 @@ final class Services: ServiceContainer
 
     lazy var showStorage = ShowStorage(coreData: coreData)
     lazy var imageCache = ImageCache.shared
-    lazy var coreData = CoreData()
+
+    lazy var coreData =
+        CoreData(containerType: .cloudKit(containerIdentifier:
+            "iCloud." + (Bundle.main.bundleIdentifier ?? "")))
 }
