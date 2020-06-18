@@ -112,8 +112,16 @@ extension ShowCoordinator: ShowViewControllerDelegate
     }
 
     func didTapViewSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
-        season.episodes.forEach { services.shows.view(episode: $0, of: show) }
-        actualizeModel()
+        let viewSeason = { [weak self] in
+            season.episodes.forEach { self?.services.shows.view(episode: $0, of: show) }
+            self?.actualizeModel()
+        }
+
+        if isShowAlreadyExists == false {
+            addShow().then { _ in viewSeason() }
+        } else {
+            viewSeason()
+        }
     }
 
     func didTapUnseeSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
