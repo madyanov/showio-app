@@ -6,6 +6,7 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
+import UIKit
 import Toolkit
 
 protocol ServiceContainer

@@ -110,6 +110,16 @@ extension ShowCoordinator: ShowViewControllerDelegate
                 self?.setModel(deletedShow, animated: true)
             }
     }
+
+    func didTapViewSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
+        season.episodes.forEach { services.shows.view(episode: $0, of: show) }
+        actualizeModel()
+    }
+
+    func didTapUnseeSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
+        season.episodes.forEach { services.shows.view(episode: $0, of: show, viewed: false) }
+        actualizeModel()
+    }
 }
 
 extension ShowCoordinator: EpisodesCollectionViewDelegate

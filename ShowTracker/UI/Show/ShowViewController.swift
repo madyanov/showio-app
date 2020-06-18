@@ -13,6 +13,8 @@ protocol ShowViewControllerDelegate: AnyObject
 {
     func didTapAddButton(in showViewController: ShowViewController)
     func didTapDeleteButton(in showViewController: ShowViewController)
+    func didTapViewSeasonButton(in showViewController: ShowViewController, show: Show, season: Season)
+    func didTapUnseeSeasonButton(in showViewController: ShowViewController, show: Show, season: Season)
 }
 
 final class ShowViewController: UIViewController
@@ -377,6 +379,7 @@ final class ShowViewController: UIViewController
                 if case .season(let season, let show)? = rows[at: index],
                     let cell = cell as? SeasonTableViewCell
                 {
+                    cell.delegate = self
                     cell.setModel(season, show: show, animated: animated)
                 } else if case .progress(let show)? = rows[at: index],
                     let cell = cell as? ProgressTableViewCell
@@ -387,6 +390,7 @@ final class ShowViewController: UIViewController
         }
 
         episodesCell?.reloadVisibleItems()
+        episodesCell?.reloadData()
     }
 }
 
@@ -545,6 +549,7 @@ extension ShowViewController: UITableViewDataSource
         } else if case .season(let season, let show)? = row,
             let cell: SeasonTableViewCell = row?.dequeue(from: tableView, for: indexPath)
         {
+            cell.delegate = self
             cell.setModel(season, show: show)
             return cell
         } else if case .loading? = row,
@@ -567,6 +572,25 @@ extension ShowViewController: InfoTableViewCellDelegate
 
     func didTapAddButton(in infoTableViewCell: InfoTableViewCell) {
         delegate?.didTapAddButton(in: self)
+    }
+}
+
+extension ShowViewController: SeasonTableViewCellDelegate
+{
+    func didTapViewButton(in cell: SeasonTableViewCell) {
+        guard let show = model, let season = cell.season else {
+            return
+        }
+
+        delegate?.didTapViewSeasonButton(in: self, show: show, season: season)
+    }
+
+    func didTapUnseeButton(in cell: SeasonTableViewCell) {
+        guard let show = model, let season = cell.season else {
+            return
+        }
+
+        delegate?.didTapUnseeSeasonButton(in: self, show: show, season: season)
     }
 }
 

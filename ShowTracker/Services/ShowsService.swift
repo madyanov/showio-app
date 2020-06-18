@@ -11,6 +11,7 @@ import UIKit
 import Toolkit
 import Promises
 
+// todo: refactor data layer
 final class ShowsService
 {
     private let application: UIApplication
@@ -128,7 +129,7 @@ final class ShowsService
 
     func syncRunningShows() -> Promise<Int> {
         // get running shows from the local storage
-        return storage.getRunningShows()
+        return storage.runningShows()
             .then { shows in
                 self.fetchShowsWithNewEpisodes(shows)
             }

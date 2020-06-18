@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Toolkit",
+        "repositoryURL": "https://github.com/madyanov/iOS-Toolkit",
+        "state": {
+          "branch": null,
+          "revision": "fb891cd22786ed4b8b57bab0dbeaa460fca62588",
+          "version": "1.2.2"
+        }
+      },
+      {
+        "package": "Promises",
+        "repositoryURL": "https://github.com/madyanov/Promises",
+        "state": {
+          "branch": null,
+          "revision": "44e6c85de7d158cafde8ca5de90f653abbd3448d",
+          "version": "1.0.4"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -206,6 +206,10 @@ final class EpisodesCollectionView: UIView
             updateScrollViewContentSize()
         }
     }
+
+    func reloadData() {
+        collectionView.reloadData()
+    }
 }
 
 extension EpisodesCollectionView: UICollectionViewDelegateFlowLayout
