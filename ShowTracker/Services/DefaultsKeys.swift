@@ -6,6 +6,7 @@
 //  Copyright © 2018 Roman Madyanov. All rights reserved.
 //
 
+import Foundation
 import Toolkit
 
 extension DefaultsKeys

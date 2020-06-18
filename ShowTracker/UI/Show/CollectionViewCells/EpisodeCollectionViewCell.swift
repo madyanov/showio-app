@@ -31,7 +31,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
 
             nameLabel.text = model?.name
             overviewText.text = model?.overview
-            isViewed = model?.canView == true ? model?.isViewed == true : nil
+            viewButton.isViewed = model?.canView == true ? model?.isViewed == true : nil
 
             if let localizedAirDate = model?.localizedAirDate {
                 airDateContainerView.isHidden = false
@@ -90,27 +90,13 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         return label
     }()
 
-    private lazy var buttonContainerView = UIView()
-
-    private lazy var viewButton: Button = {
-        let button = Button()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.alpha = 0
-        button.highlightedAlpha = 0.5
-        button.layer.borderWidth = 1
-        button.layer.cornerRadius = .standardSpacing
-        button.setImage(UIImage(named: "eye-20"), for: .normal)
-        button.addTarget(self, action: #selector(didTapViewButton), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var unseeButton: Button = {
-        let button = Button()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.alpha = 0
-        button.highlightedAlpha = 0.5
-        button.setImage(UIImage(named: "check-20"), for: .normal)
-        return button
+    private lazy var viewButton: ViewButton = {
+        let viewButton = ViewButton()
+        viewButton.delegate = self
+        viewButton.size = CGSize(width: .tappableSize, height: .tappableSize)
+        viewButton.setContentHuggingPriority(.required, for: .horizontal)
+        viewButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return viewButton
     }()
 
     private lazy var airDateContainerView: UIView = {
@@ -166,41 +152,6 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         return collapsedText
     }()
 
-    private var isViewed: Bool? {
-        didSet {
-            let scaledTransform = CGAffineTransform.identity.scaledBy(x: 0.01, y: 0.01)
-            viewButton.layer.removeAllAnimations()
-            unseeButton.layer.removeAllAnimations()
-
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0,
-                options: .allowUserInteraction,
-                animations: {
-                    if self.isViewed == true {
-                        self.viewButton.alpha = 0
-                        self.unseeButton.alpha = 1
-                        self.viewButton.transform = scaledTransform
-                        self.unseeButton.transform = .identity
-                    } else if self.isViewed == false {
-                        self.viewButton.alpha = 1
-                        self.unseeButton.alpha = 0
-                        self.viewButton.transform = .identity
-                        self.unseeButton.transform = scaledTransform
-                    } else {
-                        self.viewButton.alpha = 0
-                        self.unseeButton.alpha = 0
-                        self.viewButton.transform = scaledTransform
-                        self.unseeButton.transform = scaledTransform
-                    }
-                },
-                completion: nil
-            )
-        }
-    }
-
-    private lazy var buttonSize = CGSize(width: .tappableSize, height: .tappableSize)
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -210,9 +161,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         headerStackView.addArrangedSubview(nameStackView)
         nameStackView.addArrangedSubview(seasonAndEpisodeLabel)
         nameStackView.addArrangedSubview(nameLabel)
-        headerStackView.addArrangedSubview(buttonContainerView)
-        buttonContainerView.addSubview(viewButton)
-        buttonContainerView.addSubview(unseeButton)
+        headerStackView.addArrangedSubview(viewButton)
         contentStackView.addArrangedSubview(airDateContainerView)
         airDateContainerView.addSubview(airDateStacKView)
         airDateStacKView.addArrangedSubview(airDateImageView)
@@ -220,9 +169,6 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         contentStackView.addArrangedSubview(overviewText)
 
         airDateStacKView.snap(insets: UIEdgeInsets(.standardSpacing * 1.5), priority: .highest)
-
-        buttonContainerView.size(buttonSize)
-        unseeButton.snap()
 
         NSLayoutConstraint.activate([
             contentStackView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
@@ -241,7 +187,6 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         ], priority: .defaultHigh)
 
         startListenForThemeChange()
-        viewButton.snap()
     }
 
     @available(*, unavailable)
@@ -262,19 +207,19 @@ extension EpisodeCollectionViewCell: ThemeChanging
     func didChangeTheme() {
         seasonAndEpisodeLabel.textColor = Theme.current.primaryForegroundColor
         nameLabel.textColor = Theme.current.primaryForegroundColor
-        unseeButton.tintColor = Theme.current.primaryBrandColor
         airDateContainerView.backgroundColor = Theme.current.primaryBrandColor.withAlphaComponent(0.05)
         airDateImageView.tintColor = Theme.current.primaryBrandColor
         airDateLabel.textColor = Theme.current.primaryBrandColor
-        viewButton.tintColor = Theme.current.primaryBrandColor
-        viewButton.layer.borderColor = Theme.current.primaryBrandColor.cgColor
     }
 }
 
-extension EpisodeCollectionViewCell
+extension EpisodeCollectionViewCell: ViewButtonDelegate
 {
-    @objc
-    private func didTapViewButton() {
+    func didTapViewButton(in viewButton: ViewButton) {
         delegate?.didTapViewButton(in: self)
+    }
+
+    func didTapUnseeButton(in viewButton: ViewButton) {
+        // do nothing
     }
 }

@@ -38,6 +38,7 @@ final class EpisodesCollectionView: UIView
         didSet {
             if let initialPageIndex = delegate?.initialPageIndex(in: self) {
                 currentPageIndex = initialPageIndex
+                updateScrollViewContentOffset()
             }
         }
     }
@@ -168,8 +169,8 @@ final class EpisodesCollectionView: UIView
                                                          bottom: .standardSpacing * 2,
                                                          right: additionalSectionInsets.right + .standardSpacing * 3)
 
-        scrollView.contentOffset.x = CGFloat(currentPageIndex) * scrollView.bounds.width
         updateScrollViewContentSize()
+        updateScrollViewContentOffset()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -322,6 +323,10 @@ extension EpisodesCollectionView
 
     private func scrollToNextPage() {
         scrollToPage(currentPageIndex + 1)
+    }
+
+    func updateScrollViewContentOffset() {
+        scrollView.contentOffset.x = CGFloat(currentPageIndex) * scrollView.bounds.width
     }
 
     private func scrollToPage(_ page: Int) {

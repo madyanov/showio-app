@@ -10,9 +10,10 @@ import CoreData
 import Toolkit
 import Promises
 
+// todo: refactor data layer
 final class ShowStorage: Storage
 {
-    func getRunningShows() -> Promise<[Show]> {
+    func runningShows() -> Promise<[Show]> {
         return Promise { completion in
             let request = self.runningShowsFetchRequest()
 
@@ -167,8 +168,8 @@ final class ShowStorage: Storage
                         var episode = episode
 
                         // consistency management
-                        if let isViewed = episode.isViewed, isViewed != episodeEntity.isViewed {
-                            let delta: Int32 = isViewed ? 1 : -1
+                        if let viewed = episode.isViewed, viewed != episodeEntity.isViewed {
+                            let delta: Int32 = viewed ? 1 : -1
 
                             seasonEntity.numberOfViewedEpisodes =
                                 (delta + seasonEntity.numberOfViewedEpisodes)
@@ -178,7 +179,7 @@ final class ShowStorage: Storage
                                 (delta + showEntity.numberOfViewedEpisodes)
                                 .clamped(to: 0...showEntity.numberOfEpisodes)
 
-                            if isViewed && episode.isNew ?? false {
+                            if viewed && episode.isNew ?? false {
                                 showEntity.numberOfNewEpisodes = max(0, showEntity.numberOfNewEpisodes - 1)
                                 showEntity.hasNewEpisodes = showEntity.numberOfNewEpisodes > 0
                                 episode.isNew = false
