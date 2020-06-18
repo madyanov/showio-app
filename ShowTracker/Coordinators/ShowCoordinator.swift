@@ -14,6 +14,8 @@ final class ShowCoordinator
 {
     var model: Show?
 
+    private let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+
     private let services: ServiceContainer
     private let numberOfPreloadedEpisodes = 2
 
@@ -209,6 +211,7 @@ extension ShowCoordinator
             .then { [weak self] show -> Void in
                 self?.isShowAlreadyExists = show != nil
                 self?.setModel(show, animated: true)
+                self?.notificationFeedbackGenerator.notificationOccurred(show == nil ? .error : .success)
             }
     }
 
