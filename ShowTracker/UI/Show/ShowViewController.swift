@@ -40,6 +40,8 @@ final class ShowViewController: UIViewController
     private let posterOverlapping: CGFloat = .standardSpacing * 3
     private let collapsedHeaderHeight: CGFloat = 44
 
+    private lazy var lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+
     private var expandedHeaderHeight: CGFloat {
         var height = posterHeight + collapsedHeaderHeight - posterOverlapping
 
@@ -482,6 +484,7 @@ extension ShowViewController: UITableViewDelegate
 
         if scrollView.isDragging, height - headerHeight - topLayoutGuide.length > distanceToDismiss {
             presentingViewController?.dismiss(animated: true)
+            lightImpactFeedbackGenerator.impactOccurred()
         }
     }
 

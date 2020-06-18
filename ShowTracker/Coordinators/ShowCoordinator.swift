@@ -14,10 +14,10 @@ final class ShowCoordinator
 {
     var model: Show?
 
-    private let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-
     private let services: ServiceContainer
     private let numberOfPreloadedEpisodes = 2
+
+    private lazy var notificationFeedbackGenerator = UINotificationFeedbackGenerator()
 
     private var isShowAlreadyExists: Bool? {
         get { return showViewController?.isShowAlreadyExists }
