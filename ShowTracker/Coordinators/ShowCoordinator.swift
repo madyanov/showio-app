@@ -17,6 +17,8 @@ final class ShowCoordinator
     private let services: ServiceContainer
     private let numberOfPreloadedEpisodes = 2
 
+    private lazy var notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+
     private var isShowAlreadyExists: Bool? {
         get { return showViewController?.isShowAlreadyExists }
         set { showViewController?.isShowAlreadyExists = newValue }
@@ -110,6 +112,24 @@ extension ShowCoordinator: ShowViewControllerDelegate
                 self?.setModel(deletedShow, animated: true)
             }
     }
+
+    func didTapViewSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
+        let viewSeason = { [weak self] in
+            season.episodes.forEach { self?.services.shows.view(episode: $0, of: show) }
+            self?.actualizeModel()
+        }
+
+        if isShowAlreadyExists == false {
+            addShow().then { _ in viewSeason() }
+        } else {
+            viewSeason()
+        }
+    }
+
+    func didTapUnseeSeasonButton(in showViewController: ShowViewController, show: Show, season: Season) {
+        season.episodes.forEach { services.shows.view(episode: $0, of: show, viewed: false) }
+        actualizeModel()
+    }
 }
 
 extension ShowCoordinator: EpisodesCollectionViewDelegate
@@ -142,7 +162,7 @@ extension ShowCoordinator: EpisodesCollectionViewDelegate
 
     func initialPageIndex(in episodesCollectionView: EpisodesCollectionView) -> Int? {
         guard let lastViewedEpisodeIndex = model?.lastViewedEpisodeIndex else {
-            return nil
+            return 0
         }
 
         return lastViewedEpisodeIndex + 1
@@ -191,6 +211,7 @@ extension ShowCoordinator
             .then { [weak self] show -> Void in
                 self?.isShowAlreadyExists = show != nil
                 self?.setModel(show, animated: true)
+                self?.notificationFeedbackGenerator.notificationOccurred(show == nil ? .error : .success)
             }
     }
 

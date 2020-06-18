@@ -8,21 +8,48 @@
 
 import UIKit
 
+protocol SeasonTableViewCellDelegate: AnyObject
+{
+    func didTapViewButton(in cell: SeasonTableViewCell)
+    func didTapUnseeButton(in cell: SeasonTableViewCell)
+}
+
 final class SeasonTableViewCell: UITableViewCell
 {
-    private lazy var progressView: ProgressView = {
-        let progressView = ProgressView()
-        progressView.translatesAutoresizingMaskIntoConstraints = false
-        return progressView
+    weak var delegate: SeasonTableViewCellDelegate?
+
+    private(set) var season: Season?
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.spacing = .standardSpacing * 2
+        return stackView
     }()
+
+    private lazy var viewButton: ViewButton = {
+        let viewButton = ViewButton()
+        viewButton.delegate = self
+        return viewButton
+    }()
+
+    private lazy var progressView = ProgressView()
 
     override init(style: CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(progressView)
-        progressView.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
+
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(viewButton)
+        stackView.addArrangedSubview(progressView)
+
+        stackView.snap(insets: UIEdgeInsets(dx: .standardSpacing * 3, dy: .standardSpacing * 2))
     }
 
     func setModel(_ season: Season?, show: Show?, animated: Bool = false) {
+        self.season = season
+
+        viewButton.isViewed = season?.progress == 1
+
         guard let season = season else {
             progressView.setProgress(0, animated: animated)
             progressView.leadingLabelText = nil
@@ -39,5 +66,16 @@ final class SeasonTableViewCell: UITableViewCell
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension SeasonTableViewCell: ViewButtonDelegate
+{
+    func didTapViewButton(in viewButton: ViewButton) {
+        delegate?.didTapViewButton(in: self)
+    }
+
+    func didTapUnseeButton(in viewButton: ViewButton) {
+        delegate?.didTapUnseeButton(in: self)
     }
 }
