@@ -34,11 +34,11 @@ extension ShadedAndRounded
 
             viewWithShadow.layer.shadowPath = UIBezierPath(roundedRect: viewWithShadow.layer.bounds,
                                                            byRoundingCorners: [.topLeft, .topRight],
-                                                           cornerRadii: CGSize(width: 44, height: 44)).cgPath
+                                                           cornerRadii: CGSize(width: 30, height: 30)).cgPath
         }
 
         if let viewWithRoundedCorners = viewWithRoundedCorners {
-            viewWithRoundedCorners.layer.cornerRadius = 44
+            viewWithRoundedCorners.layer.cornerRadius = 30
             viewWithRoundedCorners.layer.masksToBounds = true
         }
     }
