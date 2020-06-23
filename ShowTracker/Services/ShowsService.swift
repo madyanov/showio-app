@@ -187,7 +187,7 @@ extension ShowsService
                             let numberOfNewEpisodes = remoteShow.numberOfEpisodes - show.numberOfEpisodes
                             totalNumberOfNewEpisodes += numberOfNewEpisodes
 
-                            // if show is finished or already has new episodes, increment it's number of new episodes
+                            // if show is finished or already has new episodes, increment its number of new episodes
                             if show.isFinished ?? false || show.numberOfNewEpisodes > 0 {
                                 overwriteCreationDate = show.isFinished ?? false
                                 remoteShow.numberOfNewEpisodes = show.numberOfNewEpisodes + numberOfNewEpisodes
