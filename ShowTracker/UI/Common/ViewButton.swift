@@ -62,7 +62,7 @@ final class ViewButton: UIView
         button.alpha = 0
         button.highlightedAlpha = 0.5
         button.layer.borderWidth = 0.5
-        button.layer.cornerRadius = .standardSpacing
+        button.layer.cornerRadius = .standardSpacing * 1.5
         button.setImage(UIImage(named: "eye-20"), for: .normal)
         button.addTarget(self, action: #selector(didTapViewButton), for: .touchUpInside)
         return button
@@ -99,7 +99,7 @@ extension ViewButton: ThemeChanging
     func didChangeTheme() {
         unseeButton.tintColor = Theme.current.primaryBrandColor
         viewButton.tintColor = Theme.current.primaryBrandColor
-        viewButton.layer.borderColor = Theme.current.primaryBrandColor.withAlphaComponent(0.3).cgColor
+        viewButton.layer.borderColor = Theme.current.primaryBrandColor.cgColor
     }
 }
 

@@ -61,7 +61,7 @@ final class ShowCollectionViewCell: UICollectionViewCell
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
         cachedImageView.contentMode = .scaleAspectFill
-        cachedImageView.layer.cornerRadius = .standardSpacing / 2
+        cachedImageView.layer.cornerRadius = .standardSpacing
         cachedImageView.layer.masksToBounds = true
         return cachedImageView
     }()
@@ -130,7 +130,7 @@ final class ShowCollectionViewCell: UICollectionViewCell
         button.setTitle("+4", for: .normal)
         button.setTextStyle(.footnote)
         button.backgroundColor = UIColor.red.withAlphaComponent(0.9)
-        button.layer.cornerRadius = .standardSpacing / 2
+        button.layer.cornerRadius = .standardSpacing
         return button
     }()
 

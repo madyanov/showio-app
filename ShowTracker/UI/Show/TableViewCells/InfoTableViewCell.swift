@@ -120,7 +120,7 @@ final class InfoTableViewCell: UITableViewCell
         button.alpha = 0
         button.highlightedAlpha = 0.5
         button.layer.borderWidth = 1
-        button.layer.cornerRadius = .standardSpacing
+        button.layer.cornerRadius = .standardSpacing * 1.5
         button.setImage(UIImage(named: "plus-20"), for: .normal)
         button.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         return button

@@ -144,7 +144,7 @@ final class ShowViewController: UIViewController
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
         cachedImageView.contentMode = .scaleAspectFill
-        cachedImageView.layer.cornerRadius = .standardSpacing / 2
+        cachedImageView.layer.cornerRadius = .standardSpacing
         cachedImageView.layer.masksToBounds = true
         return cachedImageView
     }()

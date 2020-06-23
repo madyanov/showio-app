@@ -54,7 +54,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
         let cachedImageView = CachedImageView()
         cachedImageView.translatesAutoresizingMaskIntoConstraints = false
         cachedImageView.backgroundColor = .clear
-        cachedImageView.layer.cornerRadius = .standardSpacing
+        cachedImageView.layer.cornerRadius = .standardSpacing * 2
         cachedImageView.layer.masksToBounds = true
         cachedImageView.contentMode = .scaleAspectFill
         return cachedImageView
@@ -101,7 +101,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell
 
     private lazy var airDateContainerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = .standardSpacing / 2
+        view.layer.cornerRadius = .standardSpacing * 2
         return view
     }()
 
