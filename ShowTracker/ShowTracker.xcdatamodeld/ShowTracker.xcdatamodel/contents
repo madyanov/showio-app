@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="EpisodeEntity" representedClassName="EpisodeEntity" syncable="YES" codeGenerationType="class">
         <attribute name="airDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -14,11 +14,6 @@
         <fetchIndex name="id">
             <fetchIndexElement property="id" type="Binary" order="ascending"/>
         </fetchIndex>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
     </entity>
     <entity name="SeasonEntity" representedClassName="SeasonEntity" syncable="YES" codeGenerationType="class">
         <attribute name="airDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -34,11 +29,6 @@
         <fetchIndex name="id">
             <fetchIndexElement property="id" type="Binary" order="ascending"/>
         </fetchIndex>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
     </entity>
     <entity name="ShowEntity" representedClassName="ShowEntity" syncable="YES" codeGenerationType="class">
         <attribute name="backdropURL" optional="YES" attributeType="String"/>
@@ -69,15 +59,10 @@
         <fetchIndex name="id">
             <fetchIndexElement property="id" type="Binary" order="ascending"/>
         </fetchIndex>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="id"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="EpisodeEntity" positionX="162.2265625" positionY="-43.29296875" width="128" height="193"/>
-        <element name="SeasonEntity" positionX="-81.23828125" positionY="-52.03125" width="128" height="193"/>
-        <element name="ShowEntity" positionX="-298.35546875" positionY="-197.37109375" width="128" height="420"/>
+        <element name="EpisodeEntity" positionX="162.2265625" positionY="-43.29296875" width="128" height="179"/>
+        <element name="SeasonEntity" positionX="-81.23828125" positionY="-52.03125" width="128" height="179"/>
+        <element name="ShowEntity" positionX="-298.35546875" positionY="-197.37109375" width="128" height="404"/>
     </elements>
 </model>

@@ -99,6 +99,10 @@ final class ShowStorage: Storage
                         if !overwriteCreationDate {
                             show.creationDate = showEntity.creationDate
                         }
+
+                        // manual deduplication
+                        context.delete(showEntity)
+                        try context.save()
                     }
 
                     create(show)

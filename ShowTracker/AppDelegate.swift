@@ -62,7 +62,7 @@ extension AppDelegate
     private func updateTheme(for viewController: UIViewController) {
         let defaultTheme: Theme
 
-        if #available(iOS 12.0, *) {
+        if #available(iOS 13.0, *) {
             defaultTheme = viewController.traitCollection.userInterfaceStyle == .dark
                 ? .dark
                 : .light
